@@ -170,3 +170,9 @@ cython_debug/
 pyvenv.cfg
 .venv
 pip-selfcheck.json
+
+# Processed datasets
+*.csv
+# Except original datasets
+!assignment_1_basic/task_1_odi/ODI-2022.csv
+!assignment_1_basic/task_3_spam/SmsCollection.csv
