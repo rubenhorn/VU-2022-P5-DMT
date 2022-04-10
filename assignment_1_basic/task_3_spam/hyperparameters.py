@@ -5,8 +5,5 @@ random_state = 42
 svd_n_components = 20
 svd_n_iter = 5
 
-# Model
-alpha = 0.1
-
 # KNN
 n_neighbors = 5

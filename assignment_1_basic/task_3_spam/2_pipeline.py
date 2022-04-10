@@ -40,7 +40,7 @@ X_test_vec = pipeline.transform(X_test)
 df = pd.DataFrame(columns=['model', 'accuracy train', 'accuracy test', 'time fit', 'time inf'])
 clfs = [
     LinearSVC(random_state=random_state),
-    MultinomialNB(alpha=alpha),
+    MultinomialNB(fit_prior=False),
     KNeighborsClassifier(n_neighbors=n_neighbors),
 ]
 
