@@ -1,6 +1,7 @@
 dateparser
 fuzzywuzzy
 matplotlib
+nltk
 numpy
 pandas
 scikit-learn
