@@ -50,8 +50,8 @@ for clf in clfs:
     t_train = time() - t0
     t0 = time()
     accuracy_train = clf.score(X_train_vec, y_train)
-    t_inf = time() - t0
     accuracy_test = clf.score(X_test_vec, y_test)
+    t_inf = time() - t0
     df.loc[len(df)] = [type(clf).__name__, accuracy_train, accuracy_test, t_train, t_inf]
 df.sort_values(by='accuracy test', ascending=False, inplace=True)
 
