@@ -176,3 +176,4 @@ pip-selfcheck.json
 # Except original datasets
 !assignment_1_basic/task_1_odi/ODI-2022.csv
 !assignment_1_basic/task_3_spam/SmsCollection.csv
+!assignment_1_basic/task_3_mse_vs_mae/yield_df.csv
