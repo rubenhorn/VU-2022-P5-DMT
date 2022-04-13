@@ -1,4 +1,4 @@
-from turtle import color
+import math
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
@@ -78,10 +78,10 @@ models = [
 ]
 
 fig, axs = plt.subplots(1, len(models), sharey=True, sharex=True)
-print('Model', '&', '\gls{mae}', '&', '\gls{mae}\\textsuperscript{2}', '&', '\gls{mse}', '\\\\')
+print('Model', '&', '\gls{mae}', '&', '\gls{mae}\\textsuperscript{2}', '&', '\gls{mse}', '&', '\gls{rmse}', '\\\\')
 for i, model in enumerate(models):
     mae, mse, y_pred = eval_regressor(model)
-    print(type(model).__name__, '&', f'{mae:.3f}', '&', f'{(mae**2):.3f}', '&', f'{mse:.3f}', '\\\\')
+    print(type(model).__name__, '&', f'{mae:.3f}', '&', f'{(mae**2):.3f}', '&', f'{mse:.3f}', '&', f'{math.sqrt(mse):.3f}' '\\\\')
     axs[i].scatter(y_pred, y_test)
     axs[i].plot(y_test, y_test, 'r-')
     axs[i].set_xlabel('Predicted')
