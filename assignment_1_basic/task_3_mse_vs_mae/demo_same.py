@@ -11,7 +11,7 @@ max_bonus = 20
 
 random_state = 42
 
-X, y = make_regression(n_samples=1000, n_features=1, noise=0)
+X, y = make_regression(n_samples=int(10e6), n_features=1, noise=0)
 X = X + abs(X.min())
 X = X / X.max() * max_years_experience
 y = y + abs(y.min())
@@ -21,7 +21,7 @@ y += base_salary
 y[int(len(y) / 2):] += 2
 X, y = shuffle(X, y, random_state=random_state)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=random_state)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_state)
 
 # Fit a linear regression model
 model = LinearRegression()
@@ -31,9 +31,11 @@ y_pred = model.predict(X_test)
 print('MAE:', mean_absolute_error(y_test, y_pred))
 print('MSE:', mean_squared_error(y_test, y_pred))
 
-plt.scatter(X_test, y_test)
+plt.scatter(X_test[:100], y_test[:100])
 plt.plot(X_test, y_pred, color='red')
 plt.xlabel('Years of experience')
+plt.xlim(0, max_years_experience)
+plt.ylim(0, max_bonus + base_salary)
 plt.ylabel('Salary')
 plt.show()
 
