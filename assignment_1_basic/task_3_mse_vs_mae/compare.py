@@ -1,77 +1,92 @@
+from turtle import color
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from pathlib import Path
 import seaborn as sns
+from sklearn.linear_model import LinearRegression, SGDRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.utils import shuffle
 
-dataset_filename = (Path(__file__).parent / 'yield_df.csv').resolve()
+dataset_filename = (Path(__file__).parent / 'insurance.csv').resolve()
 
-df = pd.read_csv(dataset_filename, index_col=0)
-# Drop average rainfall per region
-df.drop('average_rain_fall_mm_per_year', axis=1, inplace=True)
+random_state = 42
+sgd_max_iter = 1000
+tree_max_depth = 5
+n_neighbors = 5
 
-# Merge columns 'Area' and 'Item'
-df = df.loc[(df['Area'] == 'Brazil') & (df['Item'] == 'Maize')]
-df.drop(['Area', 'Item'], axis=1, inplace=True)
-df.columns = ['year', 'yield', 'pesticides', 'rainfall']
+
+def plot_data():
+    smokers = df[df['smoker'] == 1]
+    non_smokers = df[df['smoker'] == 0]
+    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    ax1.scatter(smokers['age'], smokers['charges'], label='Smokers', color='red')
+    ax1.scatter(non_smokers['age'], non_smokers['charges'], label='Smokers', color='blue')
+    ax1.set_xlabel('Age')
+    ax2.scatter(smokers['bmi'], smokers['charges'], label='Smokers', color='red')
+    ax2.scatter(non_smokers['bmi'], non_smokers['charges'], label='Smokers', color='blue')
+    ax2.set_xlabel('BMI')
+    fig.suptitle('Charges for smokers (red) and non-smokers (blue)')
+    plt.show()
+
+def to_one_hot(df, column):
+    df = df.copy()
+    classes = df[column].unique()
+    for cls in classes:
+        df[f'{column}_{cls}'] = (df[column] == cls).astype(int)
+    df.drop(column, axis=1, inplace=True)
+    return df
+
+df = pd.read_csv(dataset_filename)
+df['sex'] = df['sex'].apply(lambda x: 1 if x == 'female' else 0)
+df['smoker'] = df['smoker'].apply(lambda x: 1 if x == 'yes' else 0)
 
 # Visualize data
 # sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
 # plt.show()
-# sns.pairplot(df)
-# plt.show()
+# plot_data()
 
-df = shuffle(df, random_state=42)
+df = to_one_hot(df, 'region')
+#df = df[df['smoker'] == 1]
+#df = df.drop('smoker', axis=1)
 
-X = pd.DataFrame(df['pesticides'])
-y = df['yield']
+df = shuffle(df, random_state=random_state)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-#model = make_pipeline(StandardScaler(), SGDRegressor(random_state=42))
+X = df[df.columns[(df.columns != 'charges')]]
+# X = df[['bmi', 'age']]
+y = df['charges']
 
-class Model:
-    def __init__(self, learning_rate=0.1, decay_rate=0.01, n_epochs=1000, batch_size=20, random_state=42):
-        self.learning_rate_ = learning_rate
-        self.decay_rate_ = decay_rate
-        self.n_epochs_ = n_epochs
-        self.batch_size_ = batch_size
-        self.rng_ = np.random.RandomState(random_state)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_state)
 
-    def fit(self, X, y):
-        self.b1_ = self.rng_.rand(X.shape[1])
-        self.b0_ = self.rng_.rand(1)
-        for _ in range(self.n_epochs_):
-            self.learning_rate_ *= (1 - self.decay_rate_)
-            batch_idxs = self.rng_.randint(X.shape[0], size=self.batch_size_)
-            X_batch = X[batch_idxs]
-            y_batch = y.values[batch_idxs]
-            for x_i, y_i in zip(X_batch, y_batch):
-                # TODO use custom error function?
-                self.b1_ += self.learning_rate_ * (y_i - x_i.dot(self.b1_) - self.b0_) * x_i
-                self.b0_ += self.learning_rate_ * (y_i - x_i.dot(self.b1_) - self.b0_)
+def eval_regressor(model):
+    pipeline = make_pipeline(StandardScaler(), model)
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    return mae, mse, y_pred
 
-    def predict(self, X):
-        return [x.dot(self.b1_) + self.b0_ for x in X]
+models = [
+    LinearRegression(),
+    SGDRegressor(random_state=random_state, max_iter=sgd_max_iter),
+    DecisionTreeRegressor(random_state=random_state, max_depth=tree_max_depth),
+    KNeighborsRegressor(n_neighbors=n_neighbors),
+]
 
-model = make_pipeline(StandardScaler(), Model(random_state=42))
-
-model.fit(X_train, y_train)
-
-y_pred = model.predict(X_test)
-MAE = mean_absolute_error(y_test, y_pred)
-MSE = mean_squared_error(y_test, y_pred)
-print('MAE:', MAE)
-print('MSE:', MSE)
-
-plt.scatter(X_train, y_train, color='blue')
-plt.plot(X_train.iloc[:, 0], model.predict(X_train), color='red')
-#plt.scatter(X_test, y_test, color='blue')
-#plt.plot(X_test.iloc[:, 0], y_pred, color='red')
+fig, axs = plt.subplots(1, len(models), sharey=True, sharex=True)
+print('Model', '&', '\gls{mae}', '&', '\gls{mae}\\textsuperscript{2}', '&', '\gls{mse}', '\\\\')
+for i, model in enumerate(models):
+    mae, mse, y_pred = eval_regressor(model)
+    print(type(model).__name__, '&', f'{mae:.3f}', '&', f'{(mae**2):.3f}', '&', f'{mse:.3f}', '\\\\')
+    axs[i].scatter(y_pred, y_test)
+    axs[i].plot(y_test, y_test, 'r-')
+    axs[i].set_xlabel('Predicted')
+    axs[i].set_ylabel('Actual')
+    axs[i].set_title(type(model).__name__)
 plt.show()
 
-print('Done')
+print('\nDone')
