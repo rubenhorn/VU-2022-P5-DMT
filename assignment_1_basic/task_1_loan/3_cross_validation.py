@@ -30,17 +30,21 @@ X, y  = shuffle(X, y, random_state=random_state)
 def cost(y_true, y_pred):
     costs = [5 if actual == 1 else 1 for expected, actual in zip(y_true, y_pred) if expected != actual]
     return np.array(costs).sum() / len(y_true)
-scorer = make_scorer(cost, greater_is_better=False)
+penalty_scorer = make_scorer(cost, greater_is_better=False)
 
 def fit_and_score_model(model, train, test):
     X_train, X_test, y_train, y_test = X.iloc[train], X.iloc[test], y.iloc[train], y.iloc[test]
     model.fit(X_train, y_train)
-    return scorer(model, X_test, y_test)
+    return [abs(penalty_scorer(model, X_test, y_test)), model.score(X_test, y_test)]
 
 kf = KFold(n_splits=kfold_splits, random_state=random_state, shuffle=True)
-print('Model & Cost mean & Cost std \\\\')
+print('Model & Cost mean & Cost std & Accuracy mean & Accuracy std \\\\')
 for model_name, model_builder in model_builders.items():
     scores = np.array([fit_and_score_model(model_builder(), train, test) for train, test in kf.split(X, y)])
-    print(model_name, '&', scores.mean(), '&', scores.std(), '\\\\')
+    # Custom cost function
+    print(model_name, '&', scores.mean(axis=0)[0], '&', scores.std(axis=0)[0], end=' ')
+    # Accuracy
+    print('&', scores.mean(axis=0)[1], '&', scores.std(axis=0)[1], end=' ')
+    print('\\\\')
 
 print('Done')
