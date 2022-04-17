@@ -14,7 +14,7 @@ Xy_correlation = df.corrwith(df['good_customer'])
 Xy_correlation = Xy_correlation.sort_values(ascending=False, key=abs)
 # Exclude auto-correlation (1.0)
 Xy_correlation = Xy_correlation.drop(Xy_correlation.index[0])
-print(Xy_correlation.head().to_string())
+print(Xy_correlation.head(n=5).to_string())
 
 print('Done'); exit()
 

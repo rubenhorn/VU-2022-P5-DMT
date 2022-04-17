@@ -23,6 +23,7 @@ model_builders = {
 
 df = pd.read_csv(input_dataset_filename)
 X = df.drop('good_customer', axis=1)
+# X = df[['checking_account_status', 'credit_history', 'credit_duration', 'savings_status', 'credit_amount']]
 y = df['good_customer']
 X, y  = shuffle(X, y, random_state=random_state)
 
