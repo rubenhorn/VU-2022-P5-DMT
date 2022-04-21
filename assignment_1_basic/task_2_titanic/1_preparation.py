@@ -46,6 +46,7 @@ train_df['Embarked'].fillna(train_df['Embarked'].mode()[0], inplace=True)
 test_df['Age'].fillna(test_df['Age'].mean(), inplace=True)
 test_df['Embarked'].fillna(test_df['Embarked'].mode()[0], inplace=True)
 
+test_df['Fare'].fillna(test_df['Fare'].dropna().median(), inplace=True)
 
 # Find correlation between columns
 col_corr = train_df.corr()
@@ -65,7 +66,7 @@ col_corr = train_df.corr()
 
 # Drop unecessary columns
 train_df = train_df.drop(['PassengerId','Name','Ticket', 'Cabin'], axis=1)
-test_df = test_df.drop(['PassengerId','Name','Ticket', 'Cabin'], axis=1)
+test_df = test_df.drop(['Name','Ticket', 'Cabin'], axis=1)
 
 # Convert Sex column to binary
 train_df['Sex'] = train_df['Sex'].map( {'female': 1, 'male': 0} ).astype(int)
