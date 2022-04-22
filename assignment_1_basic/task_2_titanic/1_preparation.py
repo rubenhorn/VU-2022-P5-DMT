@@ -72,9 +72,9 @@ test_df = test_df.drop(['Name','Ticket', 'Cabin'], axis=1)
 train_df['Sex'] = train_df['Sex'].map( {'female': 1, 'male': 0} ).astype(int)
 test_df['Sex'] = test_df['Sex'].map( {'female': 1, 'male': 0} ).astype(int)
 
-# Convert Embarked column to ordinal values
-train_df['Embarked'] = train_df['Embarked'].map( {'C': 0, 'Q': 1, 'S': 2} ).astype(int)
-test_df['Embarked'] = test_df['Embarked'].map( {'C': 0, 'Q': 1, 'S': 2} ).astype(int)
+# Convert Embarked column to one-hot encoded vectors
+train_df = pd.get_dummies(train_df, prefix='Embarked')
+test_df = pd.get_dummies(test_df, prefix='Embarked')
 
 
 # Cut the age column into 5 categories
