@@ -18,7 +18,7 @@ n_trees = 10
 model_builders = {
     'LinearSVC': lambda: LinearSVC(random_state=random_state, dual=False),
     'KNeighborsClassifier': lambda: KNeighborsClassifier(n_neighbors=n_neighbors),
-    'RandomForestClassifier': lambda: RandomForestClassifier(random_state=random_state, n_estimators=n_trees),
+    'RandomForestClassifier': lambda: RandomForestClassifier(random_state=random_state, n_estimators=n_trees    ),
 }
 
 df = pd.read_csv(input_dataset_filename)

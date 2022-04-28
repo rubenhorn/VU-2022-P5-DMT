@@ -1,0 +1,11 @@
+#! /bin/bash
+
+cd "$(dirname "$0")"
+
+if ! command -v kaggle >/dev/null 2>&1; then
+    echo "kaggle is not installed. Please install Kaggle API first."
+    exit 1
+fi
+
+kaggle competitions download -c 2nd-assignment-dmt2022
+unzip -o 2nd-assignment-dmt2022.zip
