@@ -19,11 +19,22 @@ tprint('Creating summary of dataset...')
 summary = df.describe()
 tprint(f'Writing summary to {out_base_path}...')
 summary.to_csv(out_base_path / f'{dataset_name}-summary.csv')
-
 tprint('Summary:')
 print(summary)
 
-tprint('Columns:')
-print(', '.join(df.columns))
+tprint('Creating info of dataset...')
+info = pd.DataFrame(list(zip(df.columns, df.dtypes, df.isnull().sum(), df.isna().sum())),
+    columns=['columns', 'type', 'null_count', 'na_count'])
+tprint(f'Writing info to {out_base_path}...')
+info.to_csv(out_base_path / f'{dataset_name}-info.csv')
+tprint('Info:')
+print(info)
+
+tprint('Creating correlation of dataset...')
+corr = df.corr()
+tprint(f'Writing correlation to {out_base_path}...')
+corr.to_csv(out_base_path / f'{dataset_name}-corr.csv')
+tprint('Correlation:')
+print(corr)
 
 print('Done')
