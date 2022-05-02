@@ -12,7 +12,7 @@ random_state=42
 
 reset_timer()
 
-dataset_name = 'training_set_VU_DM-test-small' #test_set_VU_DM
+dataset_name = 'test_set_VU_DM'
 model_in_path = (Path(__file__).parent / 'models' / 'training_set_VU_DM-pipeline.joblib').resolve()
 prediction_out_path = (Path(__file__).parent / 'output' / f'{dataset_name}-prediction.csv').resolve()
 
