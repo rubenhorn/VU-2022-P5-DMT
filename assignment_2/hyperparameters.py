@@ -2,7 +2,7 @@
 use_small_dataset = True
 random_state = 42
 cv = 3 # Number of folds or None
-n_iter = 10
+n_iter = 10 # Number of samples using random parameters (non exhaustive search)
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],

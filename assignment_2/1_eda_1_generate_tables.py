@@ -24,7 +24,7 @@ print(summary)
 
 tprint('Creating info of dataset...')
 info = pd.DataFrame(list(zip(df.columns, df.dtypes, df.isnull().sum(), df.isna().sum())),
-    columns=['columns', 'type', 'null_count', 'na_count'])
+                    columns=['columns', 'type', 'null_count', 'na_count'])
 tprint(f'Writing info to {out_base_path}...')
 info.to_csv(out_base_path / f'{dataset_name}-info.csv', index=False)
 tprint('Info:')

@@ -19,7 +19,8 @@ tprint(f'Loading dataset from {in_path}...')
 df = pd.read_csv(in_path)
 
 tprint(f'Splitting dataset into train and test sets...')
-train_set, test_set = train_test_split(df, shuffle=True, test_size=0.2, random_state=random_state)
+train_set, test_set = train_test_split(
+    df, shuffle=True, test_size=0.2, random_state=random_state)
 
 tprint(f'Writing train set to {out_base_path}...')
 train_set.to_csv(out_base_path / f'{dataset_name}-train.csv', index=False)
@@ -27,10 +28,12 @@ test_set.to_csv(out_base_path / f'{dataset_name}-test.csv', index=False)
 
 tprint(f'Create smaller train set for faster iterating...')
 train_set_small = train_set.sample(frac=0.01, random_state=random_state)
-train_set_small.to_csv(out_base_path / f'{dataset_name}-train-small.csv', index=False)
+train_set_small.to_csv(
+    out_base_path / f'{dataset_name}-train-small.csv', index=False)
 
 tprint(f'Create smaller test set for faster iterating...')
 train_set_small = test_set.sample(frac=0.01, random_state=random_state)
-train_set_small.to_csv(out_base_path / f'{dataset_name}-test-small.csv', index=False)
+train_set_small.to_csv(
+    out_base_path / f'{dataset_name}-test-small.csv', index=False)
 
 tprint('Done')

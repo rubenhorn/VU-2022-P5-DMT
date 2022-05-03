@@ -33,10 +33,10 @@ y_attrs = ['booking_bool', 'click_bool']
 
 train_set = load_dataset(train_set_name)
 X_train = train_set
-y_train = train_set[y_attrs]
+y_train = train_set[y_attrs].values
 test_set = load_dataset(test_set_name)
 X_test = test_set
-y_test = test_set[y_attrs]
+y_test = test_set[y_attrs].values
 
 tprint('Creating pipeline...')
 pipeline = Pipeline([
@@ -45,9 +45,14 @@ pipeline = Pipeline([
 ])
 
 tprint('Optimizing hyperparameters...')
-def combined_recall_score(y_true, y_pred):
-    [recall_booking, recall_click] = recall_score(y_true, y_pred, average=None)
-    return combine_booking_click_value(recall_booking, recall_click)
+
+
+def prediction_cost(y_true, y_pred):
+    values_true = combine_booking_click_value(y_true[:, 0], y_true[:, 1])
+    values_pred = combine_booking_click_value(y_pred[:, 0], y_pred[:, 1])
+    residuals = values_true - values_pred
+    return np.mean(np.abs(residuals))  # MAE
+
 
 random_search = RandomizedSearchCV(
     pipeline,
@@ -57,18 +62,22 @@ random_search = RandomizedSearchCV(
     n_jobs=-1,
     verbose=1,
     random_state=hp.random_state,
-    scoring=make_scorer(combined_recall_score),
+    scoring=make_scorer(prediction_cost, greater_is_better=False),
     refit=True,
-)   
+)
 random_search.fit(X_train, y_train)
 best_hyperparams = random_search.best_params_
 print('Best parameters:', best_hyperparams)
+print('Best score:', random_search.best_score_)
 pipeline = random_search.best_estimator_
 
 tprint('Evaluating optimized pipeline...')
-[recall_booking, recall_click] = recall_score(y_test, pipeline.predict(X_test), average=None)
+y_pred = pipeline.predict(X_test)
+[recall_booking, recall_click] = recall_score(
+    y_test, y_pred, average=None)
 tprint(f'Booking recall: {recall_booking}')
 tprint(f'Click recall: {recall_click}')
+tprint(f'Score: { prediction_cost(y_test, y_pred) }')
 
 tprint('Freezing pipeline...')
 dump(pipeline, model_out_path / f'{dataset_name}-pipeline.joblib')
