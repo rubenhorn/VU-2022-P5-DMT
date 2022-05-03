@@ -5,17 +5,13 @@ import pandas as pd
 from utils import *
 from pathlib import Path
 
-# TODO set to False for actual training
-use_small_dataset = True
-n_estimators=100
-random_state=42
-
 reset_timer()
 
 dataset_name = 'test_set_VU_DM'
 model_in_path = (Path(__file__).parent / 'models' / 'training_set_VU_DM-pipeline.joblib').resolve()
 prediction_out_path = (Path(__file__).parent / 'output' / f'{dataset_name}-prediction.csv').resolve()
 
+tprint(f'Loading model from {model_in_path}...')
 model = load(model_in_path)
 test_set = load_dataset(dataset_name)
 

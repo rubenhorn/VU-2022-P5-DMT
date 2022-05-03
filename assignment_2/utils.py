@@ -1,8 +1,10 @@
 from pathlib import Path
 import time
+import numpy as np
 
 import pandas as pd
 
+np.random.seed(0)
 _start_time = time.time()
 
 def reset_timer():
@@ -28,25 +30,16 @@ def load_dataset(dataset_name):
     df = pd.read_csv(in_path)
     return df
 
-def compute_search_result_scores(search_results, model):
-    y_probas = model.predict_proba(search_results)
+def combine_booking_click_value(booking_value, click_value):
     w_booked = 5
     w_clicked = 1
     w_combined = w_booked + w_clicked
+    return (booking_value * w_booked + click_value * w_clicked) / w_combined
+
+def compute_search_result_scores(search_results, model):
+    y_probas = model.predict_proba(search_results)
     for i in range(len(y_probas[0])):
         p_b = y_probas[0][i][1]
         p_c = y_probas[1][i][1]
-        score = (p_b * w_booked + p_c * w_clicked) / w_combined
+        score = combine_booking_click_value(p_b, p_c)
         yield (search_results.iloc[i]['prop_id'], score)
-
-class Preprocessing:
-    # TODO choice of columns only for testing
-    X_attrs = ['site_id', 'visitor_location_country_id', 'visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_country_id']
-
-    def fit(self, X, y=None):
-        return self
-    def transform(self, X):
-        # TODO implement actual preprocessing
-        X = X[self.X_attrs]
-        X = X.fillna(0)
-        return X

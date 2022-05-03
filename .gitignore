@@ -183,5 +183,6 @@ assignment_2/dataset/*
 # Except download script
 !assignment_2/dataset/download
 
-# Serialized models
+# Serialized models and hyperparameters
 *.joblib
+*.json
