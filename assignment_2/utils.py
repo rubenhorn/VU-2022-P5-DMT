@@ -25,9 +25,9 @@ def print_elapsed_time(prefix='', suffix=': '):
     print(f'{prefix}{format_time(elapsed_time)}{suffix}', end='')
 
 
-def tprint(s, end='\n'):
+def tprint(s, end='\n', flush=False):
     print_elapsed_time()
-    print(s, end=end)
+    print(s, end=end, flush=flush)
 
 
 def load_dataset(dataset_name):
