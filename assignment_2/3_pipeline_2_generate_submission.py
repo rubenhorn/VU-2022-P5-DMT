@@ -38,8 +38,8 @@ with accelerate.on_gpu():
         remaining_count -= len(group)
         group_number += 1
         remaining_time = ((time.time() - start_time) * remaining_count) / (len(test_set) - remaining_count)
-        print(f'\r(Group: {group_number}/{len(grouped_dataset)}', end='', flush=False)
-        print(f', Instances left: {remaining_count}', end='', flush=False)
+        print(f'\r(Group: {group_number}/{len(grouped_dataset)}', end='', flush=True)
+        print(f', Instances left: {remaining_count}', end='', flush=True)
         print(f', Time remaining: { format_time(remaining_time) })', end='', flush=True)
 print()
 
