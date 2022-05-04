@@ -12,7 +12,7 @@ reset_timer()
 base_upload_url = 'https://transfer.sh/'
 model_base_path = (Path(__file__).parent / 'models').resolve()
 
-model_files = model_base_path.glob('*.joblib')
+model_files = list(model_base_path.glob('*.joblib'))
 
 if len(model_files) == 0:
     print('No model files found in models folder', file=sys.stderr)

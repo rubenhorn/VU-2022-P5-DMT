@@ -5,5 +5,7 @@ nltk
 numpy
 pandas
 scikit-learn
-scikit-learn-intelex
 seaborn
+# CPU/GPU accelertion
+scikit-learn-intelex
+dpcpp-cpp-rt

@@ -13,11 +13,13 @@ def reset_timer():
     global _start_time
     _start_time = time.time()
 
+
 def format_time(seconds):
     hours = int(seconds / 3600)
     minutes = int((seconds - hours * 3600) / 60)
     seconds = int(seconds - hours * 3600 - minutes * 60)
     return f'{hours:02}h {minutes:02}m {seconds:02}s'
+
 
 def print_elapsed_time(prefix='', suffix=': '):
     global _start_time
@@ -53,3 +55,10 @@ def compute_search_result_scores(search_results, model, n_jobs=1):
         p_c = y_probas[1][i][1]
         score = combine_booking_click_value(p_b, p_c)
         yield (search_results.iloc[i]['prop_id'], score)
+
+
+def prediction_cost(y_true, y_pred):
+    values_true = combine_booking_click_value(y_true[:, 0], y_true[:, 1])
+    values_pred = combine_booking_click_value(y_pred[:, 0], y_pred[:, 1])
+    residuals = values_true - values_pred
+    return np.mean(np.abs(residuals))  # MAE

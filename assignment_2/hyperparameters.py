@@ -11,6 +11,6 @@ rf_params = {
 }
 
 param_grid = [{}]
-key_prefix_rf = 'classifier__estimator__'
-for key, value in rf_params.items():
-    param_grid[0][key_prefix_rf + key] = value
+# key_prefix_rf = 'classifier__estimator__'
+# for key, value in rf_params.items():
+#     param_grid[0][key_prefix_rf + key] = value
