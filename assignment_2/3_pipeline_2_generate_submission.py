@@ -15,10 +15,10 @@ model_in_path = (Path(__file__).parent / 'models' /
 prediction_out_path = (Path(__file__).parent / 'output' /
                        f'{dataset_name}-prediction.csv').resolve()
 
-tprint(f'Loading model from {model_in_path}...')
+test_set = load_dataset(dataset_name)
 with accelerate.on_gpu():
+    tprint(f'Loading model from {model_in_path}...')
     model = load(model_in_path)
-    test_set = load_dataset(dataset_name)
     tprint(f'Group data by search...')
     grouped_dataset = test_set.groupby('srch_id')
     tprint('Generating prediction...')
