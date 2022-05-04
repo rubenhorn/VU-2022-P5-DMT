@@ -28,12 +28,10 @@ def compute_search_result_scores(search_results, model, batch_size=1000):
         end_idx = min((batch_idx + 1) * batch_size, n_search_results)
         batch = search_results.iloc[start_idx:end_idx]
         y_probas = model.predict_proba(batch)
-        ps_b.append(y_probas[0])
-        ps_c.append(y_probas[1])
+        ps_b += list(y_probas[0][:, 1])
+        ps_c += list(y_probas[1][:, 1])
     for i in range(len(ps_b)):
-        p_b = ps_b[i][1]
-        p_c = ps_c[i][1]
-        score = combine_booking_click_value(p_b, p_c)
+        score = combine_booking_click_value(ps_b[i], ps_c[i])
         yield (search_results.iloc[i]['srch_id'], search_results.iloc[i]['prop_id'], score)
 
 test_set = load_dataset(dataset_name)
@@ -45,7 +43,13 @@ df_scored_results = pd.DataFrame(scored_results, columns=['srch_id', 'prop_id', 
 tprint(f'Group data by search...')
 grouped_scored_results = df_scored_results.groupby('srch_id')
 df = pd.DataFrame(columns=['srch_id', 'prop_id'])
+start_time = time.time()
+group_number = 0
+group_count = len(grouped_scored_results)
 for search_id, group in grouped_scored_results:
+    group_number += 1
+    remaining_time = (time.time() - start_time) * (group_count - group_number - 1) / (group_number)
+    tprint(f'Sorting group {group_number}/{group_count} (Remaining: { format_time(remaining_time) })...', end='\r')   
     group.sort_values('score', ascending=False, inplace=True)
     group.reset_index(drop=True, inplace=True)
     group.drop(['score'], axis=1, inplace=True)
