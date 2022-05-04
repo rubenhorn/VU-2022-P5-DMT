@@ -41,38 +41,37 @@ test_set = load_dataset(test_set_name)
 X_test = test_set
 y_test = test_set[y_attrs].values
 
-with accelerate.on_gpu():
-    tprint('Creating pipeline...')
-    clf =  SVC(probability=True) # RandomForestClassifier()
-    pipeline = Pipeline([
-        ('preprocessing', Preprocessing()),
-        ('classifier', MultiOutputClassifier(clf))
-    ])
-    tprint('Optimizing hyperparameters...')
-    random_search = RandomizedSearchCV(
-        pipeline,
-        hp.param_grid,
-        cv=hp.cv,
-        n_iter=hp.n_iter,
-        n_jobs=-1,
-        verbose=1,
-        random_state=hp.random_state,
-        scoring=make_scorer(prediction_cost, greater_is_better=False),
-        refit=True,
-    )
-    random_search.fit(X_train, y_train)
+tprint('Creating pipeline...')
+clf =  SVC(probability=True) # RandomForestClassifier()
+pipeline = Pipeline([
+    ('preprocessing', Preprocessing()),
+    ('classifier', MultiOutputClassifier(clf))
+])
+tprint('Optimizing hyperparameters...')
+random_search = RandomizedSearchCV(
+    pipeline,
+    hp.param_grid,
+    cv=hp.cv,
+    n_iter=hp.n_iter,
+    n_jobs=-1,
+    verbose=1,
+    random_state=hp.random_state,
+    scoring=make_scorer(prediction_cost, greater_is_better=False),
+    refit=True,
+)
+random_search.fit(X_train, y_train)
 
-    best_hyperparams = random_search.best_params_
-    print('Best parameters:', best_hyperparams)
-    print('Best score:', random_search.best_score_)
-    pipeline = random_search.best_estimator_
-    tprint('Evaluating optimized pipeline...')
-    y_pred = pipeline.predict(X_test)
-    [recall_booking, recall_click] = recall_score(
-        y_test, y_pred, average=None)
-    tprint(f'Booking recall: {recall_booking}')
-    tprint(f'Click recall: {recall_click}')
-    tprint(f'Score: { prediction_cost(y_test, y_pred) }')
+best_hyperparams = random_search.best_params_
+print('Best parameters:', best_hyperparams)
+print('Best score:', random_search.best_score_)
+pipeline = random_search.best_estimator_
+tprint('Evaluating optimized pipeline...')
+y_pred = pipeline.predict(X_test)
+[recall_booking, recall_click] = recall_score(
+    y_test, y_pred, average=None)
+tprint(f'Booking recall: {recall_booking}')
+tprint(f'Click recall: {recall_click}')
+tprint(f'Score: { prediction_cost(y_test, y_pred) }')
 
 tprint('Freezing pipeline...')
 dump(pipeline, model_out_path / f'{dataset_name}-pipeline.joblib')
