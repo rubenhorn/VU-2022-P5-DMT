@@ -1,6 +1,5 @@
 from pathlib import Path
 import time
-from joblib import parallel_backend
 import numpy as np
 
 import pandas as pd
@@ -45,27 +44,6 @@ def combine_booking_click_value(booking_value, click_value):
     w_clicked = 1
     w_combined = w_booked + w_clicked
     return (booking_value * w_booked + click_value * w_clicked) / w_combined
-
-
-def compute_search_result_scores(search_results, model, n_jobs=1, batch_size=1000):
-    with parallel_backend('loky', n_jobs=n_jobs):
-        # itearate over batches
-        y_probas = []
-        n_search_results = len(search_results)
-        n_batches = int(np.ceil(n_search_results / batch_size))
-        start_time = time.time()
-        for batch_idx in range(n_batches):
-            remaining_time = (time.time() - start_time) * (n_batches - batch_idx) / (batch_idx + 1)
-            tprint(f'Predicting batch {batch_idx + 1}/{n_batches} (Remaining: { format_time(remaining_time) })...', end='\r')
-            start_idx = batch_idx * batch_size
-            end_idx = min((batch_idx + 1) * batch_size, n_search_results)
-            batch = search_results.iloc[start_idx:end_idx]
-            y_probas.append(model.predict_proba(batch))
-    for i in range(len(y_probas[0])):
-        p_b = y_probas[0][i][1]
-        p_c = y_probas[1][i][1]
-        score = combine_booking_click_value(p_b, p_c)
-        yield (search_results.iloc[i]['srch_id'], search_results.iloc[i]['prop_id'], score)
 
 
 def prediction_cost(y_true, y_pred):
