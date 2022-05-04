@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import optimize_script
+
 import json
 import sys
 from joblib import dump

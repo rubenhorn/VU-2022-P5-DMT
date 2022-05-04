@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import optimize_script
+
 from joblib import load
 import pandas as pd
 from utils import *
