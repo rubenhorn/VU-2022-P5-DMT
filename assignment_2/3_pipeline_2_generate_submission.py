@@ -30,6 +30,8 @@ def compute_search_result_scores(search_results, model, batch_size=1000):
         y_probas = model.predict_proba(batch)
         ps_b += list(y_probas[0][:, 1])
         ps_c += list(y_probas[1][:, 1])
+    print()
+    tprint('Combining booking and click scores...')
     for i in range(len(ps_b)):
         score = combine_booking_click_value(ps_b[i], ps_c[i])
         yield (search_results.iloc[i]['srch_id'], search_results.iloc[i]['prop_id'], score)
