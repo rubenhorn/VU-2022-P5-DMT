@@ -19,7 +19,6 @@ import hyperparameters as hp
 reset_timer()
 
 model_out_path = (Path(__file__).parent / 'models').resolve()
-model_out_path.mkdir(exist_ok=True)
 
 dataset_name = 'training_set_VU_DM'
 train_set_name = dataset_name + '-train'
@@ -74,6 +73,7 @@ tprint(f'Click recall: {recall_click}')
 tprint(f'Score: { prediction_cost(y_test, y_pred) }')
 
 tprint('Freezing pipeline...')
+model_out_path.mkdir(exist_ok=True)
 dump(pipeline, model_out_path / f'{dataset_name}-pipeline.joblib')
 with open(model_out_path / f'{dataset_name}-hyperparams.json', 'w') as f:
     json.dump(best_hyperparams, f, indent=4)

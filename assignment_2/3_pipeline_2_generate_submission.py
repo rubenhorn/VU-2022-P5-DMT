@@ -59,6 +59,7 @@ for search_id, group in grouped_scored_results:
 print()
 
 tprint(f'Saving prediction to {prediction_out_path}...')
+prediction_out_path.parent.mkdir(exist_ok=True)
 df.to_csv(prediction_out_path, index=False)
 
 tprint('Done')
