@@ -1,12 +1,11 @@
 #! /usr/bin/env python3
 
-from sklearn.svm import SVC
+from sklearn.linear_model import SGDClassifier
 import accelerate
 
 import json
 import sys
 from joblib import dump
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer, recall_score
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.multioutput import MultiOutputClassifier
@@ -41,7 +40,7 @@ X_test = test_set
 y_test = test_set[y_attrs].values
 
 tprint('Creating pipeline...')
-clf =  SVC(probability=True) # RandomForestClassifier()
+clf = SGDClassifier()
 pipeline = Pipeline([
     ('preprocessing', Preprocessing()),
     ('classifier', MultiOutputClassifier(clf))

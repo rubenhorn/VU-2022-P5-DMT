@@ -12,9 +12,16 @@ rf_params = {
     'random_state': [random_state],
 }
 
+sgd_params = {
+    'loss': ['log', 'hinge'],
+    'penalty': ['l2', 'l1', 'elasticnet'],
+    'random_state': [random_state],
+    'max_iter': [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
+}
+
 param_grid = [{}]
+key_prefix_sgd = 'classifier__estimator__'
+for key, value in sgd_params.items():
+    param_grid[0][key_prefix_sgd + key] = value
 # Run inference on all cores
 param_grid[0]['classifier__n_jobs'] = [-1]
-# key_prefix_rf = 'classifier__estimator__'
-# for key, value in rf_params.items():
-#     param_grid[0][key_prefix_rf + key] = value

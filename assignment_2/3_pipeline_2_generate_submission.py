@@ -32,34 +32,25 @@ def compute_search_result_scores(search_results, model, batch_size=1000):
         ps_c += list(y_probas[1][:, 1])
     print()
     tprint('Combining booking and click scores...')
-    for i in range(len(ps_b)):
-        score = combine_booking_click_value(ps_b[i], ps_c[i])
-        yield (search_results.iloc[i]['srch_id'], search_results.iloc[i]['prop_id'], score)
+    score = map(lambda x: combine_booking_click_value(x[0], x[1]), zip(ps_b, ps_c))
+    tprint('Generating dataframe...')
+    return pd.DataFrame({
+        'srch_id': search_results['srch_id'],
+        'prop_id': search_results['prop_id'],
+        'score': score
+    })
 
 test_set = load_dataset(dataset_name)
 tprint(f'Loading model from {model_in_path}...')
 model = load(model_in_path)
 tprint('Generating prediction...')
-scored_results = compute_search_result_scores(test_set, model)
-df_scored_results = pd.DataFrame(scored_results, columns=['srch_id', 'prop_id', 'score'])
-tprint(f'Group data by search...')
-grouped_scored_results = df_scored_results.groupby('srch_id')
-df = pd.DataFrame(columns=['srch_id', 'prop_id'])
-start_time = time.time()
-group_number = 0
-group_count = len(grouped_scored_results)
-for search_id, group in grouped_scored_results:
-    group_number += 1
-    remaining_time = (time.time() - start_time) * (group_count - group_number - 1) / (group_number)
-    tprint(f'Sorting group {group_number}/{group_count} (Remaining: { format_time(remaining_time) })...', end='\r')   
-    group.sort_values('score', ascending=False, inplace=True)
-    group.reset_index(drop=True, inplace=True)
-    group.drop(['score'], axis=1, inplace=True)
-    df = pd.concat([df, group], ignore_index=True, axis=0, sort=False)
-print()
-
+df = compute_search_result_scores(test_set, model)
+tprint('Sorting prediction...')
+df.sort_values(['srch_id', 'score'], ascending = [True, False], inplace = True)
+df.drop(['score'], axis = 1, inplace = True)
 tprint(f'Saving prediction to {prediction_out_path}...')
 prediction_out_path.parent.mkdir(exist_ok=True)
+assert len(df) == len(test_set) # Check if all rows are present
 df.to_csv(prediction_out_path, index=False)
 
 tprint('Done')
