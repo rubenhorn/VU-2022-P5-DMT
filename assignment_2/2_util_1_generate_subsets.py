@@ -27,13 +27,17 @@ train_set.to_csv(out_base_path / f'{dataset_name}-train.csv', index=False)
 test_set.to_csv(out_base_path / f'{dataset_name}-test.csv', index=False)
 
 tprint(f'Create smaller train set for faster iterating...')
-train_set_small = train_set.sample(frac=0.01, random_state=random_state)
+test_set.sort_values(by='srch_id', inplace=True)
+train_set_small = test_set.head(n=int(len(test_set) * 0.01))
+train_set_small = train_set_small.sample(frac=1, random_state=random_state)
 train_set_small.to_csv(
     out_base_path / f'{dataset_name}-train-small.csv', index=False)
 
 tprint(f'Create smaller test set for faster iterating...')
-train_set_small = test_set.sample(frac=0.01, random_state=random_state)
-train_set_small.to_csv(
+test_set.sort_values(by='srch_id', inplace=True)
+test_set_small = test_set.head(n=int(len(test_set) * 0.01))
+test_set_small = test_set_small.sample(frac=1, random_state=random_state)
+test_set_small.to_csv(
     out_base_path / f'{dataset_name}-test-small.csv', index=False)
 
 tprint('Done')
