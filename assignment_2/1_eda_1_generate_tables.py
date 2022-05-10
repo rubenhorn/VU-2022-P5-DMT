@@ -15,10 +15,14 @@ out_base_path.mkdir(exist_ok=True)
 tprint(f'Loading dataset from {in_path}...')
 df = pd.read_csv(in_path)
 
+tprint('Counting number of properties per search...')
+prop_counts = df.groupby('srch_id').size().reset_index(name='count')['count']
+tprint(f'Properties per query: {prop_counts.min()}-{prop_counts.max()}')
+
 tprint('Creating summary of dataset...')
 summary = df.describe()
 tprint(f'Writing summary to {out_base_path}...')
-summary.to_csv(out_base_path / f'{dataset_name}-summary.csv', index=False)
+summary.to_csv(out_base_path / f'{dataset_name}-summary.csv', index=True)
 tprint('Summary:')
 print(summary)
 
@@ -26,14 +30,14 @@ tprint('Creating info of dataset...')
 info = pd.DataFrame(list(zip(df.columns, df.dtypes, df.isnull().sum(), df.isna().sum())),
                     columns=['columns', 'type', 'null_count', 'na_count'])
 tprint(f'Writing info to {out_base_path}...')
-info.to_csv(out_base_path / f'{dataset_name}-info.csv', index=False)
+info.to_csv(out_base_path / f'{dataset_name}-info.csv', index=True)
 tprint('Info:')
 print(info)
 
 tprint('Creating correlation of dataset...')
 corr = df.corr()
 tprint(f'Writing correlation to {out_base_path}...')
-corr.to_csv(out_base_path / f'{dataset_name}-corr.csv', index=False)
+corr.to_csv(out_base_path / f'{dataset_name}-corr.csv', index=True)
 tprint('Correlation:')
 print(corr)
 
