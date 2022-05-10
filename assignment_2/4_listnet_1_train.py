@@ -8,8 +8,6 @@ from pathlib import Path
 from preprocessing import Preprocessing
 import hyperparameters as hp
 
-DOCS_PER_QUERY = 50
-
 reset_timer()
 
 dataset_name = 'training_set_VU_DM'

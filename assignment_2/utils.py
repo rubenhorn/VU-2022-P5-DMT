@@ -4,6 +4,8 @@ import numpy as np
 
 import pandas as pd
 
+DOCS_PER_QUERY = 50
+
 np.random.seed(0)
 _start_time = time.time()
 
