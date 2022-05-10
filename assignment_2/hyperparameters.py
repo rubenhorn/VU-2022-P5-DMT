@@ -5,6 +5,7 @@ random_state = 42
 cv = 3
 # Number of samples using random parameters (non exhaustive search)
 n_iter = 10
+tf_epochs = 50
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],

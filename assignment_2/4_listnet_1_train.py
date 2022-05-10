@@ -73,8 +73,8 @@ relevance_grades_prob_dist = tf.nn.softmax(y_train_batches_tensor, axis=-1)
 hist = model.fit(
     [X_train_batches_array], 
     relevance_grades_prob_dist, 
-    epochs=50, 
-    verbose=False
+    epochs=hp.tf_epochs, 
+    verbose=True,
 )
 
 tprint('Evaluating model...')
