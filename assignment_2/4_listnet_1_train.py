@@ -44,7 +44,7 @@ X_train_batches, y_train_batches = create_batches(train_set)
 X_test_batches, y_test_batches = create_batches(test_set)
 
 def create_model(docs_per_query, embedding_dims):
-    # Model from https://embracingtherandom.com/machine-learning/tensorflow/ranking/deep-learning/learning-to-rank-part-2/
+    # TODO refine network architecture
     docs_input = tf.keras.layers.Input(shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
     dense_1 = tf.keras.layers.Dense(units=3, activation='linear', name='dense_1')
     dense_out = tf.keras.layers.Dense(units=1, activation='linear', name='scores')
@@ -53,7 +53,7 @@ def create_model(docs_per_query, embedding_dims):
     scores = tf.keras.layers.Flatten()(dense_out(dense_1_out))
     model_out = scores_prob_dist(scores)
     model = tf.keras.models.Model(inputs=[docs_input], outputs=[model_out])
-    optimizer = tf.keras.optimizers.SGD(learning_rate=0.03, momentum=0.9)
+    optimizer = tf.keras.optimizers.SGD(learning_rate=hp.learning_rate, momentum=hp.momentum)
     loss = tf.keras.losses.KLDivergence()
     model.compile(optimizer=optimizer, loss=loss)
     return model

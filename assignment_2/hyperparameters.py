@@ -6,6 +6,8 @@ cv = 3
 # Number of samples using random parameters (non exhaustive search)
 n_iter = 10
 tf_epochs = 50
+learning_rate=0.03
+momentum=0.9
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],
