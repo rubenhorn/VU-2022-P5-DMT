@@ -21,7 +21,8 @@ model = tf.keras.models.load_model(model_in_path)
 start_time = time.time()
 tprint('Creating batches by grouping by srch_id...')
 # With padding
-grouped_test_set = [group.sample(DOCS_PER_QUERY, replace=True) for _, group in test_set.groupby('srch_id')]
+pad_group = lambda group: pd.concat([group, group.sample(DOCS_PER_QUERY - len(group), replace=True)])
+grouped_test_set = [pad_group(group) for _, group in test_set.groupby('srch_id')]
 n_groups = len(grouped_test_set)
 tprint('Transforming input...')
 pp = Preprocessing()
@@ -69,7 +70,7 @@ df = pd.DataFrame(result[1:], columns=columns)
 
 tprint(f'Saving prediction to {prediction_out_path}...')
 prediction_out_path.parent.mkdir(exist_ok=True)
-assert len(df) == len(test_set) # Check if all rows are present
+assert len(df) == len(test_set), f'Prediction size: {len(df)} != test set size: {len(test_set)}'
 df.to_csv(prediction_out_path, index=False)
 
 tprint('Done')
