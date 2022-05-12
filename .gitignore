@@ -184,5 +184,4 @@ assignment_2/dataset/*
 !assignment_2/dataset/download
 
 # Serialized models and hyperparameters
-*.joblib
-*.json
+assignment_2/models/*
