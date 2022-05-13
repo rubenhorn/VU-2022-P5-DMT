@@ -63,7 +63,7 @@ def create_model(docs_per_query, embedding_dims):
     model = tf.keras.models.Model(inputs=[docs_input], outputs=[model_out])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=hp.learning_rate, momentum=hp.momentum)
-    loss = tf.keras.losses.KLDivergence()
+    loss = tf.keras.losses.BinaryCrossentropy()
     model.compile(optimizer=optimizer, loss=loss)
     return model
 
