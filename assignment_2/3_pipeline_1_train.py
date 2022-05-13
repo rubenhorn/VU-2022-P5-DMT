@@ -47,7 +47,7 @@ random_search = RandomizedSearchCV(
     hp.param_grid,
     cv=hp.cv,
     n_iter=hp.n_iter,
-    n_jobs=-1,
+    n_jobs=1, # Do not parallelize to avoid out-of-memory errors
     verbose=1,
     random_state=hp.random_state,
     scoring=make_scorer(prediction_cost, greater_is_better=False),
