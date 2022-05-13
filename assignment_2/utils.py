@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+import sys
 import time
 import numpy as np
 
@@ -53,3 +55,14 @@ def prediction_cost(y_true, y_pred):
     values_pred = combine_booking_click_value(y_pred[:, 0], y_pred[:, 1])
     residuals = values_true - values_pred
     return np.mean(np.abs(residuals))  # MAE
+
+def use_full_dataset(show_warning=True):
+    env_varname = 'USE_FULL_DATASET'
+    use_full_dataset = env_varname in os.environ and os.environ[env_varname] == '1'
+    if show_warning and not use_full_dataset:
+        print('-' * 80)
+        print('WARNING: Using small dataset', file=sys.stderr)
+        print('Do not use for submission!', file=sys.stderr)
+        print(f'(Use environment variable {env_varname}=1 to use full dataset)', file=sys.stderr)
+        print('-' * 80)
+    return use_full_dataset
