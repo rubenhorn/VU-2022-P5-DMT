@@ -22,13 +22,9 @@ model_out_path = (Path(__file__).parent / 'models').resolve()
 dataset_name = 'training_set_VU_DM'
 train_set_name = dataset_name + '-train'
 test_set_name = dataset_name + '-test'
-if hp.use_small_dataset:
+if not use_full_dataset():
     train_set_name += '-small'
     test_set_name += '-small'
-    print('-' * 80)
-    print('WARNING: Using small dataset', file=sys.stderr)
-    print('Do not use for submission!', file=sys.stderr)
-    print('-' * 80)
 
 y_attrs = ['booking_bool', 'click_bool']
 
