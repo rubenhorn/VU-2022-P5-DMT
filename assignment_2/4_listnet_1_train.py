@@ -74,15 +74,9 @@ X_train_batches_array = np.array(X_train_batches)
 y_train_batches_tensor = tf.constant(y_train_batches, dtype=tf.float32)
 relevance_grades_prob_dist = tf.nn.softmax(y_train_batches_tensor, axis=-1)
 hist = model.fit(
-<<<<<<< HEAD
-    [X_train_batches_array], 
-    relevance_grades_prob_dist, 
-    epochs=hp.tf_epochs, 
-=======
     [X_train_batches_array],
     relevance_grades_prob_dist,
     epochs=hp.tf_epochs,
->>>>>>> feat/ListNet
     verbose=True,
 )
 
