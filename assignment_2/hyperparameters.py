@@ -20,9 +20,22 @@ sgd_params = {
     'max_iter': [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
 }
 
+rbf_params = {
+    'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+    'random_state': [random_state],
+}
+
 param_grid = [{}]
+
 key_prefix_sgd = 'classifier__estimator__'
 for key, value in sgd_params.items():
     param_grid[0][key_prefix_sgd + key] = value
+
+key_prefix_rbf = 'rbf__'
+for key, value in rbf_params.items():
+    # NOTE: If you remove the RBFSampler, you have to comment out the following line
+    param_grid[0][key_prefix_rbf + key] = value
+    pass
+
 # Run inference on all cores
 param_grid[0]['classifier__n_jobs'] = [-1]

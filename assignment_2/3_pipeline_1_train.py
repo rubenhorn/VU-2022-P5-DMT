@@ -12,6 +12,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from utils import *
 from pathlib import Path
 from sklearn.pipeline import Pipeline
+from sklearn.kernel_approximation import RBFSampler
 from preprocessing import Preprocessing
 import hyperparameters as hp
 
@@ -39,6 +40,7 @@ tprint('Creating pipeline...')
 clf = SGDClassifier()
 pipeline = Pipeline([
     ('preprocessing', Preprocessing()),
+    ('rbf', RBFSampler()), # Kernel trick (For non-linearly separable data)
     ('classifier', MultiOutputClassifier(clf))
 ])
 tprint('Optimizing hyperparameters...')
