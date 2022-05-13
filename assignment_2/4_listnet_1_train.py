@@ -34,6 +34,7 @@ def create_batches(data):
         y_batches.append(y)
     return X_batches, y_batches
 
+
 pp = Preprocessing()
 train_set = load_dataset(train_set_name)
 test_set = load_dataset(test_set_name)
@@ -44,18 +45,21 @@ X_test_batches, y_test_batches = create_batches(test_set)
 
 
 def create_model(docs_per_query, embedding_dims):
-    # TODO refine network architecture
+    # Input layer
     docs_input = tf.keras.layers.Input(
         shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
-    dense_1 = tf.keras.layers.Dense(
-        units=3, activation='linear', name='dense_1')
-    dense_out = tf.keras.layers.Dense(
-        units=1, activation='linear', name='scores')
+    # Hidden layer
+    hidden_1 = tf.keras.layers.Dense(units=3, name='hidden_1')
+    # Output layer
+    dense_out = tf.keras.layers.Dense(units=1, name='scores')
+    # Wire up layers
+    hidden_1_out = hidden_1(docs_input)
+    scores = tf.keras.layers.Flatten()(dense_out(hidden_1_out))
+    # Output (probability of relevance in query)
     scores_prob_dist = tf.keras.layers.Dense(
         units=docs_per_query, activation='softmax', name='scores_prob_dist')
-    dense_1_out = dense_1(docs_input)
-    scores = tf.keras.layers.Flatten()(dense_out(dense_1_out))
     model_out = scores_prob_dist(scores)
+    # Build model
     model = tf.keras.models.Model(inputs=[docs_input], outputs=[model_out])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=hp.learning_rate, momentum=hp.momentum)
