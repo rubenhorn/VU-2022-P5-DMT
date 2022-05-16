@@ -19,7 +19,7 @@ prediction_out_path = (Path(__file__).parent / 'output' /
 test_set = load_dataset(dataset_name)
 if not use_full_dataset():
     test_set = test_set.sort_values(by='srch_id')
-    test_set = test_set.head(len(test_set) * 0.01)
+    test_set = test_set.head(int(len(test_set) * 0.01))
 
 tprint(f'Loading model from {model_in_path}...')
 model = tf.keras.models.load_model(model_in_path)

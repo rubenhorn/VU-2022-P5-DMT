@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 
-from sklearn.linear_model import SGDClassifier
+from sklearn.cluster import KMeans
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 import accelerate
 
 import json
@@ -8,11 +10,9 @@ import sys
 from joblib import dump
 from sklearn.metrics import make_scorer, recall_score
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.multioutput import MultiOutputClassifier
 from utils import *
 from pathlib import Path
 from sklearn.pipeline import Pipeline
-from sklearn.kernel_approximation import RBFSampler
 from preprocessing import Preprocessing
 import hyperparameters as hp
 
@@ -29,30 +29,30 @@ if not use_full_dataset():
 
 y_attrs = ['booking_bool', 'click_bool']
 
+y_to_scalar = lambda y: combine_booking_click_value(y[:, 0], y[:, 1])
+
 train_set = load_dataset(train_set_name)
 X_train = train_set
-y_train = train_set[y_attrs].values
+y_train = y_to_scalar(train_set[y_attrs].values)
 test_set = load_dataset(test_set_name)
 X_test = test_set
-y_test = test_set[y_attrs].values
+y_test = y_to_scalar(test_set[y_attrs].values)
 
 tprint('Creating pipeline...')
-clf = SGDClassifier()
 pipeline = Pipeline([
     ('preprocessing', Preprocessing()),
-    ('rbf', RBFSampler()), # Kernel trick (For non-linearly separable data)
-    ('classifier', MultiOutputClassifier(clf))
+    ('clustering', KMeans()),
+    ('regression', DecisionTreeRegressor())
 ])
 tprint('Optimizing hyperparameters...')
 random_search = RandomizedSearchCV(
     pipeline,
-    hp.param_grid_pipeline,
+    hp.param_grid_clustering,
     cv=hp.cv,
     n_iter=hp.n_iter,
     n_jobs=1, # Do not parallelize to avoid out-of-memory errors
     verbose=1,
     random_state=hp.random_state,
-    scoring=make_scorer(prediction_cost, greater_is_better=False),
     refit=True,
 )
 random_search.fit(X_train, y_train)
@@ -62,17 +62,12 @@ print('Best parameters:', best_hyperparams)
 print('Best score:', random_search.best_score_)
 pipeline = random_search.best_estimator_
 tprint('Evaluating optimized pipeline...')
-y_pred = pipeline.predict(X_test)
-[recall_booking, recall_click] = recall_score(
-    y_test, y_pred, average=None)
-tprint(f'Booking recall: {recall_booking}')
-tprint(f'Click recall: {recall_click}')
-tprint(f'Score: { prediction_cost(y_test, y_pred) }')
+tprint(f'Score: { pipeline.score(X_test, y_test) }')
 
 tprint('Freezing pipeline...')
 model_out_path.mkdir(exist_ok=True)
-dump(pipeline, model_out_path / f'{dataset_name}-pipeline.joblib')
-with open(model_out_path / f'{dataset_name}-pipeline-hyperparams.json', 'w') as f:
+dump(pipeline, model_out_path / f'{dataset_name}-clustering.joblib')
+with open(model_out_path / f'{dataset_name}-clustering-hyperparams.json', 'w') as f:
     json.dump(best_hyperparams, f, indent=4)
 
 tprint('Done')

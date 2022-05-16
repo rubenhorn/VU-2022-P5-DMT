@@ -25,17 +25,28 @@ rbf_params = {
     'random_state': [random_state],
 }
 
-param_grid = [{}]
+param_grid_pipeline = [{}]
 
 key_prefix_sgd = 'classifier__estimator__'
 for key, value in sgd_params.items():
-    param_grid[0][key_prefix_sgd + key] = value
+    param_grid_pipeline[0][key_prefix_sgd + key] = value
 
 key_prefix_rbf = 'rbf__'
 for key, value in rbf_params.items():
     # NOTE: If you remove the RBFSampler, you have to comment out the following line
-    param_grid[0][key_prefix_rbf + key] = value
+    param_grid_pipeline[0][key_prefix_rbf + key] = value
     pass
 
 # Run inference on all cores
-param_grid[0]['classifier__n_jobs'] = [-1]
+param_grid_pipeline[0]['classifier__n_jobs'] = [-1]
+
+kmeans_params = {
+    'n_clusters': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    'random_state': [random_state],
+}
+
+param_grid_clustering = [{}]
+
+key_prefix_kmeans = 'clustering__'
+for key, value in kmeans_params.items():
+    param_grid_clustering[0][key_prefix_kmeans + key] = value
