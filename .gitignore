@@ -185,3 +185,6 @@ assignment_2/dataset/*
 
 # Serialized models and hyperparameters
 assignment_2/models/*
+
+# Plots
+assignment_2/plots/*
