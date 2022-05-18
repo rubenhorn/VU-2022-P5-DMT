@@ -41,4 +41,11 @@ corr.to_csv(out_base_path / f'{dataset_name}-corr.csv', index=True)
 tprint('Correlation:')
 print(corr)
 
+tprint('Creating correlation of dataset in relation to \'booking_bool\'...')
+booking_corr = df.corrwith(df['booking_bool'])
+tprint(f'Writing correlation to {out_base_path}...')
+booking_corr.to_csv(out_base_path / f'{dataset_name}-booking-corr.csv', index=True)
+tprint('Correlation:')
+print(booking_corr)
+
 tprint('Done')
