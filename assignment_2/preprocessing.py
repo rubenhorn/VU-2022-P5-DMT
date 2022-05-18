@@ -27,17 +27,22 @@ class Preprocessing:
         out = pd.DataFrame()
 
         # Property related features
-        cols_location_score = ['prop_location_score1', 'prop_location_score2']
-        out = _append_columns(out, X[cols_location_score])
-        cols_rating_score = ['prop_review_score', 'prop_starrating']
-        out = _append_columns(out, X[cols_rating_score])
-        cols_flags = ['prop_brand_bool', 'promotion_flag', 'random_bool']
-        out = _append_columns(out, X[cols_flags])
+        out = _append_columns(out, X[['prop_location_score1', 'prop_location_score2']])
+        out = _append_columns(out, X[['prop_review_score', 'prop_starrating']])
+        out = _append_columns(out, X[['prop_brand_bool', 'promotion_flag', 'random_bool']])
+        out = _append_columns(out, X[['price_usd', 'prop_log_historical_price']])
 
         # User related features
-        # TODO
+        out = _append_columns(out, X[['gross_bookings_usd', 'visitor_hist_adr_usd']])
+        out = _append_columns(out, X[['visitor_hist_starrating']])
 
-        cols_nan = ['prop_location_score2', 'prop_review_score']
+        # Booking related features
+        # TODO (e.g. date+window, rooms+guests, etc.)
+
+        # Print columns that have NaN values
+        # print(list(out.columns[out.isna().any()])); exit()
+
+        cols_nan = ['prop_location_score2', 'prop_review_score', 'gross_bookings_usd', 'visitor_hist_adr_usd', 'visitor_hist_starrating']
         out = _extract_nan(out, columns=cols_nan)
 
         # Output dimensionality reduction (?)
