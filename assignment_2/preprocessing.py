@@ -26,6 +26,7 @@ class Preprocessing:
     def transform(self, X):
         out = pd.DataFrame()
 
+        # Property related features
         cols_location_score = ['prop_location_score1', 'prop_location_score2']
         out = _append_columns(out, X[cols_location_score])
         cols_rating_score = ['prop_review_score', 'prop_starrating']
@@ -33,7 +34,13 @@ class Preprocessing:
         cols_flags = ['prop_brand_bool', 'promotion_flag', 'random_bool']
         out = _append_columns(out, X[cols_flags])
 
+        # User related features
+        # TODO
+
         cols_nan = ['prop_location_score2', 'prop_review_score']
         out = _extract_nan(out, columns=cols_nan)
+
+        # Output dimensionality reduction (?)
+        # TODO
 
         return out
