@@ -39,10 +39,13 @@ class Preprocessing:
         # Booking related features
         # TODO (e.g. date+window, rooms+guests, etc.)
 
+        # Search related features
+        out = _append_columns(out, X[['srch_saturday_night_bool', 'orig_destination_distance']])
+
         # Print columns that have NaN values
         # print(list(out.columns[out.isna().any()])); exit()
 
-        cols_nan = ['prop_location_score2', 'prop_review_score', 'visitor_hist_adr_usd', 'visitor_hist_starrating']
+        cols_nan = ['prop_location_score2', 'prop_review_score', 'visitor_hist_adr_usd', 'visitor_hist_starrating', 'orig_destination_distance']
         out = _extract_nan(out, columns=cols_nan)
 
         # Output dimensionality reduction (?)

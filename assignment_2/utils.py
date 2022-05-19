@@ -40,6 +40,21 @@ def load_dataset(dataset_name):
                f'{dataset_name}.csv').resolve()
     tprint(f'Loading dataset from {in_path}...')
     df = pd.read_csv(in_path)
+    df = reduce_df_size(df)
+    return df
+
+def reduce_df_size(df):
+    df = df.copy()
+    for col in df.columns:
+        if str(df[col].dtype).startswith('int'):
+            if col.endswith('_id'):
+                df[col] = df[col].astype(np.int32)
+            elif col == 'srch_booking_window':
+                df[col] = df[col].astype(np.int16)
+            else:
+                df[col] = df[col].astype(np.int8)
+        elif str(df[col].dtype).startswith('float'):
+            df[col] = df[col].astype(np.float32)
     return df
 
 
