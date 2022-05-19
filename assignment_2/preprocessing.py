@@ -33,7 +33,7 @@ class Preprocessing:
         out = _append_columns(out, X[['price_usd', 'prop_log_historical_price']])
 
         # User related features
-        out = _append_columns(out, X[['gross_bookings_usd', 'visitor_hist_adr_usd']])
+        out = _append_columns(out, X[['visitor_hist_adr_usd']])
         out = _append_columns(out, X[['visitor_hist_starrating']])
 
         # Booking related features
@@ -42,7 +42,7 @@ class Preprocessing:
         # Print columns that have NaN values
         # print(list(out.columns[out.isna().any()])); exit()
 
-        cols_nan = ['prop_location_score2', 'prop_review_score', 'gross_bookings_usd', 'visitor_hist_adr_usd', 'visitor_hist_starrating']
+        cols_nan = ['prop_location_score2', 'prop_review_score', 'visitor_hist_adr_usd', 'visitor_hist_starrating']
         out = _extract_nan(out, columns=cols_nan)
 
         # Output dimensionality reduction (?)
