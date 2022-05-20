@@ -43,6 +43,10 @@ class Preprocessing:
         # Search related features
         out = _append_columns(out, X[['srch_saturday_night_bool', 'orig_destination_distance']])
 
+        # New date related features
+        out['month'] = X['date_time'].apply(lambda x: dateparser.parse(x).month)
+        out['weekday'] = X['date_time'].apply(lambda x: dateparser.parse(x).weekday())
+
         # Print columns that have NaN values
         # print(list(out.columns[out.isna().any()])); exit()
 
