@@ -69,11 +69,10 @@ def combine_booking_click_value(booking_value, click_value):
     return (booking_value * w_booked + click_value * w_clicked) / w_combined
 
 
-def prediction_cost(y_true, y_pred):
+def ndcg_score_multivalue_booking_click(y_true, y_pred):
     values_true = combine_booking_click_value(y_true[:, 0], y_true[:, 1])
     values_pred = combine_booking_click_value(y_pred[:, 0], y_pred[:, 1])
-    residuals = values_true - values_pred
-    return np.mean(np.abs(residuals))  # MAE
+    return ndcg_score(values_true, values_pred)
 
 def use_full_dataset(show_warning=True):
     env_varname = 'USE_FULL_DATASET'

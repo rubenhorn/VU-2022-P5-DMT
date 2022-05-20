@@ -1,7 +1,5 @@
 #! /usr/bin/env python3
 
-# TODO use NDCG as metric
-
 import accelerate
 
 from sklearn.linear_model import SGDClassifier
@@ -53,14 +51,14 @@ random_search = RandomizedSearchCV(
     n_jobs=1, # Do not parallelize to avoid out-of-memory errors
     verbose=1,
     random_state=hp.random_state,
-    scoring=make_scorer(prediction_cost, greater_is_better=False),
+    scoring=make_scorer(ndcg_score_multivalue_booking_click, greater_is_better=True),
     refit=True,
 )
 random_search.fit(X_train, y_train)
 
 best_hyperparams = random_search.best_params_
 print('Best parameters:', best_hyperparams)
-print('Best score:', random_search.best_score_)
+print('Best NDCG score:', random_search.best_score_)
 pipeline = random_search.best_estimator_
 tprint('Evaluating optimized pipeline...')
 y_pred = pipeline.predict(X_test)
@@ -68,7 +66,7 @@ y_pred = pipeline.predict(X_test)
     y_test, y_pred, average=None)
 tprint(f'Booking recall: {recall_booking}')
 tprint(f'Click recall: {recall_click}')
-tprint(f'Score: { prediction_cost(y_test, y_pred) }')
+tprint(f'NDCG Score: { ndcg_score_multivalue_booking_click(y_test, y_pred) }')
 
 tprint('Freezing pipeline...')
 model_out_path.mkdir(exist_ok=True)
