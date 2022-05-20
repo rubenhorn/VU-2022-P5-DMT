@@ -4,8 +4,13 @@ cv = 3
 # Number of samples using random parameters (non exhaustive search)
 n_iter = 10
 tf_epochs = 50
-learning_rate = 0.03
+lr = 0.03
 momentum = 0.9
+early_stopping_patience = 10
+early_stopping_min_delta = 0.001
+reduce_lr_factor=0.5
+reduce_lr_patience=2
+min_lr=1e-6
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],
@@ -41,6 +46,7 @@ for key, value in rbf_params.items():
 param_grid_pipeline[0]['classifier__n_jobs'] = [-1]
 
 kmeans_params = {
+    # TODO Should we limit this range a bit?
     'n_clusters': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     'random_state': [random_state],
 }

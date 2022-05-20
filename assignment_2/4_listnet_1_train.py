@@ -9,6 +9,7 @@ from pathlib import Path
 from preprocessing import Preprocessing
 import hyperparameters as hp
 from tensorflow.keras.layers import *
+from tensorflow.keras.callbacks import *
 
 reset_timer()
 
@@ -48,12 +49,17 @@ def create_model(docs_per_query, embedding_dims):
     # Input layer
     docs_input = Input(
         shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
-    # Hidden layer
-    hidden_1 = Dense(units=3, name='hidden_1')
+    # Hidden layer (try linear + non-linear activation)
+    # hidden_1_linear = Dense(units=6, name='hidden_1_linear', activation='linear')
+    # hidden_1_relu = Dense(units=6, name='hidden_1_relu', activation='relu')
+    # hidden_1 = Concatenate(name='hidden_1')
+    hidden_1 = Dense(units=6, name='hidden_1', activation='leaky_relu')
     # Output layer
     dense_out = Dense(units=1, name='scores')
     # Wire up layers
-    scores = Flatten()(dense_out(hidden_1(docs_input)))
+    # dense_in = ([hidden_1_linear(docs_input), hidden_1_relu(docs_input)])
+    dense_in = hidden_1(docs_input)
+    scores = Flatten()(dense_out(dense_in))
     # Output (probability of relevance in query)
     scores_prob_dist = Dense(
         units=docs_per_query, activation='softmax', name='scores_prob_dist')
@@ -61,8 +67,9 @@ def create_model(docs_per_query, embedding_dims):
     # Build model
     model = tf.keras.models.Model(inputs=[docs_input], outputs=[model_out])
     optimizer = tf.keras.optimizers.SGD(
-        learning_rate=hp.learning_rate, momentum=hp.momentum)
-    loss = tf.keras.losses.KLDivergence() # BinaryCrossentropy results in NaN
+        learning_rate=hp.lr, momentum=hp.momentum)
+    # loss = tf.keras.losses.KLDivergence() # Suggested by original article
+    loss = tfr.keras.losses.ApproxNDCGLoss()
     model.compile(optimizer=optimizer, loss=loss, metrics=[tfr.keras.metrics.NDCGMetric()])
     return model
 
@@ -81,6 +88,10 @@ model.fit(
     relevance_grades_prob_dist,
     epochs=hp.tf_epochs,
     verbose=True,
+    callbacks=[
+        ReduceLROnPlateau(monitor='loss', factor=hp.reduce_lr_factor, patience=hp.reduce_lr_patience, min_lr=hp.min_lr),
+        EarlyStopping(monitor='loss', patience=hp.early_stopping_patience, min_delta=hp.early_stopping_min_delta)
+    ]
 )
 
 tprint('Delete training data to save memory...')
