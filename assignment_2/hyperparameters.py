@@ -42,7 +42,7 @@ param_grid_pipeline[0]['classifier__n_jobs'] = [-1]
 
 kmeans_params = {
     # 'n_clusters': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    'n_clusters': [8,9,10,11,12,13,14,15,16,17,18],
+    'n_clusters': [8,9,10,11],
     'random_state': [random_state],
 }
 

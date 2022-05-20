@@ -47,7 +47,7 @@ class Preprocessing:
         # # Print columns that have NaN values
         # print(list(out.columns[out.isna().any()])); exit()
         # cols_nan = ['prop_location_score2', 'prop_review_score', 'visitor_hist_adr_usd', 'visitor_hist_starrating', 'orig_destination_distance']
-        out = _extract_nan(out, columns=cols)
+        # out = _extract_nan(out, columns=cols)
 
         # Output dimensionality reduction (?)
         # TODO
