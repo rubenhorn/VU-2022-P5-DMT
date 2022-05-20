@@ -5,6 +5,10 @@ import time
 import numpy as np
 
 import pandas as pd
+from sklearn.metrics import make_scorer
+
+import tensorflow as tf
+import tensorflow_ranking as tfr
 
 DOCS_PER_QUERY = 50
 
@@ -81,3 +85,12 @@ def use_full_dataset(show_warning=True):
         print(f'(Use environment variable {env_varname}=1 to use full dataset)', file=sys.stderr)
         print('-' * 80)
     return use_full_dataset
+
+# custom scorer for sci-kit learn using NDCG
+def ndcg_score(y_true, y_pred):
+    y_true = tf.expand_dims(y_true, 1)
+    y_pred = tf.expand_dims(y_pred, 1)
+    ndcg = tfr.keras.metrics.NDCGMetric()
+    return ndcg(y_true, y_pred).numpy()
+    
+ndcg_sorer = make_scorer(ndcg_score, greater_is_better=True)

@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 
-from sklearn.linear_model import SGDClassifier
+# TODO use NDCG as metric
+
 import accelerate
 
+from sklearn.linear_model import SGDClassifier
 import json
-import sys
 from joblib import dump
 from sklearn.metrics import make_scorer, recall_score
 from sklearn.model_selection import RandomizedSearchCV

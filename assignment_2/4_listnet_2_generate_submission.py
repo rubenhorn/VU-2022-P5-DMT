@@ -59,7 +59,7 @@ for i in range(0, len(X_batches), BATCH_SIZE):
     remaining_time = (time.time() - start_time) * \
         (len(X_batches) - i) / (i + 1)
     tprint(
-        f'Batch {int(i / BATCH_SIZE) + 1}/{len(X_batches / BATCH_SIZE)} (Remaining: { format_time(remaining_time) })...', end='\r')
+        f'Batch {int(i / BATCH_SIZE) + 1}/{int(len(X_batches) / BATCH_SIZE)} (Remaining: { format_time(remaining_time) })...', end='\r')
     X_batch = X_batches[i:i + BATCH_SIZE] if i + \
         BATCH_SIZE < len(X_batches) else X_batches[i:]
     X_batch_tensor = tf.convert_to_tensor(np.array(X_batch))

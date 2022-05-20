@@ -1,12 +1,14 @@
 #! /usr/bin/env python3
 
 import tensorflow as tf
+import tensorflow_ranking as tfr
 
 import sys
 from utils import *
 from pathlib import Path
 from preprocessing import Preprocessing
 import hyperparameters as hp
+from tensorflow.keras.layers import *
 
 reset_timer()
 
@@ -37,34 +39,31 @@ def create_batches(data):
 
 pp = Preprocessing()
 train_set = load_dataset(train_set_name)
-test_set = load_dataset(test_set_name)
 
 tprint('Create batches by query...')
 X_train_batches, y_train_batches = create_batches(train_set)
-X_test_batches, y_test_batches = create_batches(test_set)
 
 
 def create_model(docs_per_query, embedding_dims):
     # Input layer
-    docs_input = tf.keras.layers.Input(
+    docs_input = Input(
         shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
     # Hidden layer
-    hidden_1 = tf.keras.layers.Dense(units=3, name='hidden_1')
+    hidden_1 = Dense(units=3, name='hidden_1')
     # Output layer
-    dense_out = tf.keras.layers.Dense(units=1, name='scores')
+    dense_out = Dense(units=1, name='scores')
     # Wire up layers
-    hidden_1_out = hidden_1(docs_input)
-    scores = tf.keras.layers.Flatten()(dense_out(hidden_1_out))
+    scores = Flatten()(dense_out(hidden_1(docs_input)))
     # Output (probability of relevance in query)
-    scores_prob_dist = tf.keras.layers.Dense(
+    scores_prob_dist = Dense(
         units=docs_per_query, activation='softmax', name='scores_prob_dist')
     model_out = scores_prob_dist(scores)
     # Build model
     model = tf.keras.models.Model(inputs=[docs_input], outputs=[model_out])
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=hp.learning_rate, momentum=hp.momentum)
-    loss = tf.keras.losses.BinaryCrossentropy()
-    model.compile(optimizer=optimizer, loss=loss)
+    loss = tf.keras.losses.KLDivergence() # BinaryCrossentropy results in NaN
+    model.compile(optimizer=optimizer, loss=loss, metrics=[tfr.keras.metrics.NDCGMetric()])
     return model
 
 
@@ -77,23 +76,36 @@ tprint('Fitting model...')
 X_train_batches_array = np.array(X_train_batches)
 y_train_batches_tensor = tf.constant(y_train_batches, dtype=tf.float32)
 relevance_grades_prob_dist = tf.nn.softmax(y_train_batches_tensor, axis=-1)
-hist = model.fit(
+model.fit(
     [X_train_batches_array],
     relevance_grades_prob_dist,
     epochs=hp.tf_epochs,
     verbose=True,
 )
 
+tprint('Delete training data to save memory...')
+del X_train_batches_array
+del y_train_batches_tensor
+del relevance_grades_prob_dist
+del X_train_batches
+del y_train_batches
+del train_set
+
+test_set = load_dataset(test_set_name)
+
+tprint('Create batches by query...')
+X_test_batches, y_test_batches = create_batches(test_set)
+
 tprint('Evaluating model...')
 X_test_batches_array = np.array(X_test_batches)
 y_test_batches_tensor = tf.constant(y_test_batches, dtype=tf.float32)
 relevance_grades_prob_dist = tf.nn.softmax(y_test_batches_tensor, axis=-1)
-loss = model.evaluate(
+scores = model.evaluate(
     [X_test_batches_array],
     relevance_grades_prob_dist,
     verbose=False
 )
-print('Test loss:', loss)
+print('Test NDCG:', scores[1])
 
 tprint('Freezing trained model...')
 model_out_path.mkdir(exist_ok=True, parents=True)
