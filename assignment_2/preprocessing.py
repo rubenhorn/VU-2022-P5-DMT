@@ -1,5 +1,6 @@
 
 import sys
+from numpy import int8
 import pandas as pd
 
 
@@ -15,7 +16,7 @@ def _extract_nan(df, columns=None):
         columns = df.columns[df.isna().any()]
     df = df.copy()
     for col in columns:
-        df[col + '_nan_bool'] = df[col].isnull().astype(int)
+        df[col + '_nan_bool'] = df[col].isnull().astype(int8)
         df[col] = df[col].fillna(0)
     return df
 

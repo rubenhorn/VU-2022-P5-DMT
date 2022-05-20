@@ -10,7 +10,7 @@ from sklearn.metrics import make_scorer
 import tensorflow as tf
 import tensorflow_ranking as tfr
 
-DOCS_PER_QUERY = 50
+DOCS_PER_QUERY = 38
 
 np.random.seed(0)
 _start_time = time.time()
@@ -93,3 +93,6 @@ def ndcg_score(y_true, y_pred):
     return ndcg(y_true, y_pred).numpy()
     
 ndcg_sorer = make_scorer(ndcg_score, greater_is_better=True)
+
+def pad_group(group): return pd.concat(
+    [group, group.sample(DOCS_PER_QUERY - len(group), replace=True)])

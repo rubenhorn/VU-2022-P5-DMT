@@ -26,12 +26,6 @@ model = tf.keras.models.load_model(model_in_path)
 start_time = time.time()
 tprint('Creating batches by grouping by srch_id...')
 # With padding
-
-
-def pad_group(group): return pd.concat(
-    [group, group.sample(DOCS_PER_QUERY - len(group), replace=True)])
-
-
 grouped_test_set = [pad_group(group)
                     for _, group in test_set.groupby('srch_id')]
 n_groups = len(grouped_test_set)

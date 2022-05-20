@@ -27,7 +27,7 @@ def create_batches(data):
     X_batches = []
     y_batches = []
     for _, group in data.groupby('srch_id'):
-        group = group.sample(DOCS_PER_QUERY, replace=True)  # Pad input
+        group = pad_group(group)  # Pad input
         assert len(group) == DOCS_PER_QUERY
         X = pp.transform(group)
         y = group.apply(
