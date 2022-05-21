@@ -58,6 +58,34 @@ class Preprocessing:
             'srch_adults_count', 'srch_children_count',
             'srch_room_count', 'srch_length_of_stay']])
 
+        # Competitors
+        out = _append_columns(out, X[[
+            'comp1_rate', 'comp2_rate',
+            'comp3_rate', 'comp4_rate',
+            'comp5_rate', 'comp6_rate',
+            'comp7_rate', 'comp8_rate'
+        ]])
+        out = _append_columns(out, X[[
+            'comp1_inv', 'comp2_inv',
+            'comp3_inv', 'comp4_inv',
+            'comp5_inv', 'comp6_inv',
+            'comp7_inv', 'comp8_inv',
+        ]])
+        out = _append_columns(out, X[[
+            'comp1_rate_percent_diff', 'comp2_rate_percent_diff',
+            'comp3_rate_percent_diff', 'comp4_rate_percent_diff',
+            'comp5_rate_percent_diff', 'comp6_rate_percent_diff',
+            'comp7_rate_percent_diff', 'comp8_rate_percent_diff',
+        ]])
+        out = _extract_nan(out, columns=[
+            'comp1_rate', 'comp2_rate', 'comp3_rate', 'comp4_rate',
+            'comp5_rate', 'comp6_rate', 'comp7_rate', 'comp8_rate',
+            'comp1_inv', 'comp2_inv', 'comp3_inv', 'comp4_inv',
+            'comp5_inv', 'comp6_inv', 'comp7_inv', 'comp8_inv',
+            'comp1_rate_percent_diff', 'comp2_rate_percent_diff', 'comp3_rate_percent_diff', 'comp4_rate_percent_diff',
+            'comp5_rate_percent_diff', 'comp6_rate_percent_diff', 'comp7_rate_percent_diff', 'comp8_rate_percent_diff'
+        ])
+
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 
         cols_nan = [

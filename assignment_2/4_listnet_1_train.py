@@ -50,8 +50,8 @@ def create_model(docs_per_query, embedding_dims):
     docs_input = Input(
         shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
     # Compute relevance scores
-    hidden_1_booked = Dense(units=6, name='hidden_1_booked', activation='leaky_relu')
-    hidden_1_clicked = Dense(units=6, name='hidden_1_clicked', activation='leaky_relu')
+    hidden_1_booked = Dense(units=24, name='hidden_1_booked', activation='leaky_relu')
+    hidden_1_clicked = Dense(units=24, name='hidden_1_clicked', activation='leaky_relu')
     dense_out_booked = Dense(units=1, name='scores_booked', activation='softmax')(hidden_1_booked(docs_input))
     dense_out_clicked = Dense(units=1, name='scores_clicked', activation='softmax')(hidden_1_clicked(docs_input))
     # Output layer (weighted sum of hidden output layers)
@@ -89,7 +89,7 @@ model.fit(
     verbose=True,
     callbacks=[
         ReduceLROnPlateau(monitor='loss', factor=hp.reduce_lr_factor, patience=hp.reduce_lr_patience, min_lr=hp.min_lr),
-        EarlyStopping(monitor='loss', patience=hp.early_stopping_patience, min_delta=hp.early_stopping_min_delta)
+        # EarlyStopping(monitor='loss', patience=hp.early_stopping_patience, min_delta=hp.early_stopping_min_delta)
     ]
 )
 
