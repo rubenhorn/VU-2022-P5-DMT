@@ -69,7 +69,7 @@ tprint('Evaluating optimized pipeline...')
 
 test_set = load_dataset(test_set_name)
 X_test = test_set
-y_test = test_set[y_attrs].values.values.astype(np.float32)
+y_test = test_set[y_attrs].values.astype(np.float32)
 
 y_pred = pipeline.predict(X_test)
 [recall_booking, recall_click] = recall_score(
