@@ -3,6 +3,7 @@
 import accelerate
 
 from sklearn.linear_model import SGDClassifier
+from sklearn.decomposition import PCA
 import json
 from joblib import dump
 from sklearn.metrics import make_scorer, recall_score
@@ -30,15 +31,13 @@ y_attrs = ['booking_bool', 'click_bool']
 
 train_set = load_dataset(train_set_name)
 X_train = train_set
-y_train = train_set[y_attrs].values
-test_set = load_dataset(test_set_name)
-X_test = test_set
-y_test = test_set[y_attrs].values
+y_train = train_set[y_attrs].values.astype(np.float32)
 
 tprint('Creating pipeline...')
 clf = SGDClassifier()
 pipeline = Pipeline([
     ('preprocessing', Preprocessing()),
+    ('pca', PCA()),
     ('rbf', RBFSampler()), # Kernel trick (For non-linearly separable data)
     ('classifier', MultiOutputClassifier(clf))
 ])
@@ -56,11 +55,22 @@ random_search = RandomizedSearchCV(
 )
 random_search.fit(X_train, y_train)
 
+tprint('Deleting training set...')
+del X_train
+del y_train
+del train_set
+
 best_hyperparams = random_search.best_params_
 print('Best parameters:', best_hyperparams)
 print('Best NDCG score:', random_search.best_score_)
 pipeline = random_search.best_estimator_
 tprint('Evaluating optimized pipeline...')
+
+
+test_set = load_dataset(test_set_name)
+X_test = test_set
+y_test = test_set[y_attrs].values.values.astype(np.float32)
+
 y_pred = pipeline.predict(X_test)
 [recall_booking, recall_click] = recall_score(
     y_test, y_pred, average=None)

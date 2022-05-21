@@ -32,7 +32,7 @@ def create_batches(data):
         assert len(group) == DOCS_PER_QUERY
         X = pp.transform(group)
         y = group.apply(
-            lambda row: row['booking_bool'] * 5 + row['click_bool'] * 1, axis=1)
+            lambda row: (row['booking_bool'] * 5 + row['click_bool']) * 1 / 6, axis=1)
         X_batches.append(X)
         y_batches.append(y)
     return X_batches, y_batches
@@ -49,18 +49,17 @@ def create_model(docs_per_query, embedding_dims):
     # Input layer
     docs_input = Input(
         shape=(docs_per_query, embedding_dims, ), dtype=tf.float32, name='docs')
-    # Hidden layer (try linear + non-linear activation)
-    # hidden_1_linear = Dense(units=6, name='hidden_1_linear', activation='linear')
-    # hidden_1_relu = Dense(units=6, name='hidden_1_relu', activation='relu')
-    # hidden_1 = Concatenate(name='hidden_1')
-    hidden_1 = Dense(units=6, name='hidden_1', activation='leaky_relu')
-    # Output layer
-    dense_out = Dense(units=1, name='scores')
-    # Wire up layers
-    # dense_in = ([hidden_1_linear(docs_input), hidden_1_relu(docs_input)])
-    dense_in = hidden_1(docs_input)
-    scores = Flatten()(dense_out(dense_in))
+    # Compute relevance scores
+    hidden_1_booked = Dense(units=6, name='hidden_1_booked', activation='leaky_relu')
+    hidden_1_clicked = Dense(units=6, name='hidden_1_clicked', activation='leaky_relu')
+    dense_out_booked = Dense(units=1, name='scores_booked', activation='softmax')(hidden_1_booked(docs_input))
+    dense_out_clicked = Dense(units=1, name='scores_clicked', activation='softmax')(hidden_1_clicked(docs_input))
+    # Output layer (weighted sum of hidden output layers)
+    dense_out_booked_weighted = Lambda(lambda x: x * 5, name='scores_booked_weighted')(dense_out_booked)
+    dense_out = Add(name='combine_booked_clicked')([dense_out_booked_weighted, dense_out_clicked])
+    dense_out_normalized = Lambda(lambda x: x / 6, name='normalize_combined')(dense_out)
     # Output (probability of relevance in query)
+    scores = Flatten()(dense_out_normalized)
     scores_prob_dist = Dense(
         units=docs_per_query, activation='softmax', name='scores_prob_dist')
     model_out = scores_prob_dist(scores)
