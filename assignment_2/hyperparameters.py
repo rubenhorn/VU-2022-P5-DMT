@@ -3,6 +3,8 @@ random_state = 42
 cv = 3
 # Number of samples using random parameters (non exhaustive search)
 n_iter = 20
+
+# Neural network
 tf_epochs = 50
 lr = 0.03
 momentum = 0.9
@@ -11,6 +13,15 @@ early_stopping_min_delta = 0.001
 reduce_lr_factor=0.5
 reduce_lr_patience=2
 min_lr=1e-6
+
+# LambdaMART
+lm_n_estimators = 100
+lm_learning_rate = 0.2
+lm_max_leaf_nodes = 10
+lm_min_samples_leaf = 64
+lm_query_subsample = 0.5
+lm_max_features = 0.5
+lm_stop_after = 250
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],
