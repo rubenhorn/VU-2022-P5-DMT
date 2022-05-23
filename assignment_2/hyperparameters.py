@@ -25,7 +25,13 @@ lm_stop_after = 250
 
 rf_params = {
     'n_estimators': [10, 50, 100, 200],
-    'max_depth': [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    'max_depth': [5, 10, 20, 40, 60, 80, 100],
+    'max_features': [0.1, 0.2, 0.4, 0.6, 0.8, 1.0],
+    'min_samples_leaf': [1, 4, 8, 16, 32, 64, 128],
+    'min_samples_split': [2, 4, 6, 8, 10],
+    'max_leaf_nodes': [None, 10, 20, 40, 80, 100],
+    'bootstrap': [True, False],
+    'criterion': ['gini', 'entropy', 'log_loss'],
     'random_state': [random_state],
 }
 
@@ -48,20 +54,25 @@ pca_params = {
 
 param_grid_pipeline = [{}]
 
+key_prefix_rf = 'classifier__'
+for key, value in rf_params.items():
+    param_grid_pipeline[0][key_prefix_rf + key] = value
+
 key_prefix_sgd = 'classifier__estimator__'
 for key, value in sgd_params.items():
-    param_grid_pipeline[0][key_prefix_sgd + key] = value
+    # param_grid_pipeline[0][key_prefix_sgd + key] = value
+    pass
 
 key_prefix_rbf = 'rbf__'
 for key, value in rbf_params.items():
     # NOTE: If you remove the RBFSampler, you have to comment out the following line
-    param_grid_pipeline[0][key_prefix_rbf + key] = value
+    # param_grid_pipeline[0][key_prefix_rbf + key] = value
     pass
 
 key_prefix_pca = 'pca__'
 for key, value in pca_params.items():
     # NOTE: If you remove the PCA, you have to comment out the following line
-    param_grid_pipeline[0][key_prefix_pca + key] = value
+    # param_grid_pipeline[0][key_prefix_pca + key] = value
     pass
 
 # Run inference on all cores

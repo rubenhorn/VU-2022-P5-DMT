@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from sklearn.ensemble import RandomForestClassifier
 import accelerate
 
 from sklearn.linear_model import SGDClassifier
@@ -37,9 +38,10 @@ tprint('Creating pipeline...')
 clf = SGDClassifier()
 pipeline = Pipeline([
     ('preprocessing', Preprocessing()),
-    ('pca', PCA()),
-    ('rbf', RBFSampler()), # Kernel trick (For non-linearly separable data)
-    ('classifier', MultiOutputClassifier(clf))
+    # ('pca', PCA()),
+    # ('rbf', RBFSampler()), # Kernel trick (For non-linearly separable data)
+    # ('classifier', MultiOutputClassifier(clf))
+    ('classifier', RandomForestClassifier())
 ])
 tprint('Optimizing hyperparameters...')
 random_search = RandomizedSearchCV(
