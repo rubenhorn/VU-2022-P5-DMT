@@ -1,6 +1,6 @@
 
 import sys
-from numpy import int8, log10
+from numpy import int8, log10, float32
 import pandas as pd
 import gc
 
@@ -112,9 +112,9 @@ class Preprocessing:
         ])
 
         # Normalized features
-        out = _append_columns(out, normalize_features(X, 'srch_id', 'price_usd', True).to_frame())
-        out = _append_columns(out, normalize_features(X, 'srch_id', 'prop_starrating').to_frame())
-        out = _append_columns(out, normalize_features(X, 'prop_id', 'price_usd').to_frame())
+        out = _append_columns(out, normalize_features(X, 'srch_id', 'price_usd', True).to_frame().astype(float32))
+        out = _append_columns(out, normalize_features(X, 'srch_id', 'prop_starrating').to_frame().astype(float32))
+        out = _append_columns(out, normalize_features(X, 'prop_id', 'price_usd').to_frame().astype(float32))
         # out = out.drop(labels=['price_usd', 'prop_starrating'], axis = 1)
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 
