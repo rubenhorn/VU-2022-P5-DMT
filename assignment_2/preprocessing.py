@@ -47,10 +47,11 @@ def normalize_features(input_df, group_key, target_column, take_log10=False):
     df_merge[target_column + "_norm_by_" + group_key] = (
         df_merge[target_column] - df_merge[target_column + "_mean"]
     ) / df_merge[target_column + "_std"]
-    df_merge = df_merge.drop(labels=[col["mean"], col["std"]], axis=1)
+    df_merge[target_column + "_norm_by_" + group_key] = df_merge[target_column + "_norm_by_" + group_key].fillna(0)
+    # df_merge = df_merge.drop(labels=[col["mean"], col["std"]], axis=1)
 
     gc.collect()
-    return df_merge
+    return df_merge[target_column + "_norm_by_" + group_key]
 
 class Preprocessing:
     def fit(self, X, y=None):
@@ -111,9 +112,9 @@ class Preprocessing:
         ])
 
         # Normalized features
-        out = normalize_features(X, 'srch_id', 'price_usd', True)
-        out = normalize_features(X, 'srch_id', 'prop_starrating')
-        out = normalize_features(X, 'prop_id', 'price_usd')
+        out = _append_columns(out, normalize_features(X, 'srch_id', 'price_usd', True).to_frame())
+        out = _append_columns(out, normalize_features(X, 'srch_id', 'prop_starrating').to_frame())
+        out = _append_columns(out, normalize_features(X, 'prop_id', 'price_usd').to_frame())
         # out = out.drop(labels=['price_usd', 'prop_starrating'], axis = 1)
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 
