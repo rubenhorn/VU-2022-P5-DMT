@@ -1,6 +1,6 @@
 
 import sys
-from numpy import int8, log10, float32
+from numpy import int8, log10, float32, inf
 import pandas as pd
 import gc
 
@@ -48,6 +48,7 @@ def normalize_features(input_df, group_key, target_column, take_log10=False):
         df_merge[target_column] - df_merge[target_column + "_mean"]
     ) / df_merge[target_column + "_std"]
     df_merge[target_column + "_norm_by_" + group_key] = df_merge[target_column + "_norm_by_" + group_key].fillna(0)
+    df_merge[target_column + "_norm_by_" + group_key].replace([inf, -inf], 0,inplace=True)
     # df_merge = df_merge.drop(labels=[col["mean"], col["std"]], axis=1)
 
     gc.collect()
