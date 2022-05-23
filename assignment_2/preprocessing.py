@@ -1,8 +1,8 @@
 
 import sys
-from numpy import int8
+from numpy import int8, log10
 import pandas as pd
-
+import gc
 
 def _append_columns(df, slice):
         df = df.copy()
@@ -27,6 +27,30 @@ def _limit_values(slice, min_value=None, max_value=None):
     if max_value is not None:
         df[df > max_value] = max_value
     return df
+
+def normalize_features(input_df, group_key, target_column, take_log10=False):
+    # for numerical stability
+    epsilon = 1e-4
+    if take_log10:
+        input_df[target_column] = log10(input_df[target_column] + epsilon)
+    methods = ["mean", "std"]
+
+    df = input_df.groupby(group_key).agg({target_column: methods})
+
+    df.columns = df.columns.droplevel()
+    col = {}
+    for method in methods:
+        col[method] = target_column + "_" + method
+
+    df.rename(columns=col, inplace=True)
+    df_merge = input_df.merge(df.reset_index(), on=group_key)
+    df_merge[target_column + "_norm_by_" + group_key] = (
+        df_merge[target_column] - df_merge[target_column + "_mean"]
+    ) / df_merge[target_column + "_std"]
+    df_merge = df_merge.drop(labels=[col["mean"], col["std"]], axis=1)
+
+    gc.collect()
+    return df_merge
 
 class Preprocessing:
     def fit(self, X, y=None):
@@ -86,6 +110,11 @@ class Preprocessing:
             'comp5_rate_percent_diff', 'comp6_rate_percent_diff', 'comp7_rate_percent_diff', 'comp8_rate_percent_diff'
         ])
 
+        # Normalized features
+        out = normalize_features(X, 'srch_id', 'price_usd', True)
+        out = normalize_features(X, 'srch_id', 'prop_starrating')
+        out = normalize_features(X, 'prop_id', 'price_usd')
+        # out = out.drop(labels=['price_usd', 'prop_starrating'], axis = 1)
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 
         cols_nan = [
