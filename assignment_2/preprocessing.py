@@ -122,7 +122,8 @@ class Preprocessing:
         cols_nan = [
             'prop_location_score2', 'prop_review_score', 
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
-            'orig_destination_distance', 'srch_query_affinity_score']
+            'orig_destination_distance', 'srch_query_affinity_score',
+            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id', 'price_usd_norm_by_prop_id']
         out = _extract_nan(out, columns=cols_nan)
 
         # Check if there are any columns with NaN values not in cols_nan
