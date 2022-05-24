@@ -28,7 +28,7 @@ def _limit_values(slice, min_value=None, max_value=None):
         df[df > max_value] = max_value
     return df
 
-def normalize_features(input_df, group_key, target_column, take_log10=False):
+def _normalize_features(input_df, group_key, target_column, take_log10=False):
     # for numerical stability
     epsilon = 1e-4
     if take_log10:
@@ -113,9 +113,9 @@ class Preprocessing:
         ])
 
         # Normalized features
-        out = _append_columns(out, normalize_features(X, 'srch_id', 'price_usd', True).to_frame().astype(float32))
-        out = _append_columns(out, normalize_features(X, 'srch_id', 'prop_starrating').to_frame().astype(float32))
-        out = _append_columns(out, normalize_features(X, 'prop_id', 'price_usd').to_frame().astype(float32))
+        out = _append_columns(out, _normalize_features(X, 'srch_id', 'price_usd', True).to_frame().astype(float32))
+        out = _append_columns(out, _normalize_features(X, 'srch_id', 'prop_starrating').to_frame().astype(float32))
+        out = _append_columns(out, _normalize_features(X, 'prop_id', 'price_usd').to_frame().astype(float32))
         # out = out.drop(labels=['price_usd', 'prop_starrating'], axis = 1)
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 

@@ -2,7 +2,7 @@ random_state = 42
 # Number of folds or None
 cv = 3
 # Number of samples using random parameters (non exhaustive search)
-n_iter = 20
+n_iter = 5
 
 # Neural network
 tf_epochs = 50
@@ -24,14 +24,14 @@ lm_max_features = 0.5
 lm_stop_after = 250
 
 rf_params = {
-    'n_estimators': [10, 50, 100, 200],
-    'max_depth': [5, 10, 20, 40, 60, 80, 100],
-    'max_features': [0.1, 0.2, 0.4, 0.6, 0.8, 1.0],
-    'min_samples_leaf': [1, 4, 8, 16, 32, 64, 128],
-    'min_samples_split': [2, 4, 6, 8, 10],
-    'max_leaf_nodes': [None, 10, 20, 40, 80, 100],
-    'bootstrap': [True, False],
-    'criterion': ['gini', 'entropy', 'log_loss'],
+    'n_estimators': [100, 200],
+    'max_depth': [20, 40, 80],
+    'max_features': [0.1, 0.2],
+    'min_samples_leaf': [32, 64],
+    'min_samples_split': [10],
+    'max_leaf_nodes': [10],
+    'bootstrap': [False],
+    'criterion': ['gini'],
     'random_state': [random_state],
 }
 
