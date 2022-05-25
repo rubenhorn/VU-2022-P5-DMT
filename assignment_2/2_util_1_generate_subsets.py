@@ -44,7 +44,7 @@ tprint(f'Create historical data of property bookings')
 sum_df = train_set.groupby(['prop_id']).agg(
     {'booking_bool': 'sum'})
 sum_df = sum_df['booking_bool'].rename('booking_bool_sum')
-sum_df.to_csv('./output/prop_booking_sum.csv')
+sum_df.to_csv(out_base_path / 'prop_booking_sum.csv')
 
 methods = ["mean", "std"]
 
@@ -52,6 +52,6 @@ tprint(f'Create historical data of property position')
 position_df = train_set.groupby('prop_id').agg({'position': methods})
 position_df.columns = position_df.columns.droplevel()
 position_df = position_df.rename(columns={'mean': 'position_mean', 'std': 'position_std'})
-position_df.to_csv('./output/prop_position.csv')
+position_df.to_csv(out_base_path / 'prop_position.csv')
 
 tprint('Done')
