@@ -15,7 +15,8 @@ reduce_lr_patience=2
 min_lr=1e-6
 
 # LambdaMART
-lm_n_estimators = 100
+# lm_n_estimators = 100
+lm_n_estimators = 200
 lm_learning_rate = 0.2
 lm_max_leaf_nodes = 10
 lm_min_samples_leaf = 64
