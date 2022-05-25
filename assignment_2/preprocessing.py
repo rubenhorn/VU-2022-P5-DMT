@@ -28,7 +28,7 @@ def _limit_values(slice, min_value=None, max_value=None):
         df[df > max_value] = max_value
     return df
 
-def _normalize_features(input_df, group_key, target_column, take_log10=False):
+def _normalize_features(input_df, group_key, target_column, take_log10=False, export=False):
     # for numerical stability
     epsilon = 1e-4
     if take_log10:
@@ -47,7 +47,7 @@ def _normalize_features(input_df, group_key, target_column, take_log10=False):
     df_merge[target_column + "_norm_by_" + group_key] = (
         df_merge[target_column] - df_merge[target_column + "_mean"]
     ) / df_merge[target_column + "_std"]
-    df_merge[target_column + "_norm_by_" + group_key] = df_merge[target_column + "_norm_by_" + group_key].fillna(0)
+    df_merge[target_column + "_norm_by_" + group_key] = df_merge[target_column + "_norm_by_" + group_key]
     df_merge[target_column + "_norm_by_" + group_key].replace([inf, -inf], 0,inplace=True)
     # df_merge = df_merge.drop(labels=[col["mean"], col["std"]], axis=1)
 
@@ -61,7 +61,7 @@ class Preprocessing:
     def transform(self, X):
         out = pd.DataFrame()
         lookup_book_sum = pd.read_csv('./output/prop_booking_sum.csv')
-        # lookup_position = load_dataset('./output/prop_position.csv')
+        lookup_position = pd.read_csv('./output/prop_position.csv')
 
         # Property related features
         out = _append_columns(out, X[['prop_location_score1', 'prop_location_score2']])
@@ -123,14 +123,18 @@ class Preprocessing:
 
         # Lookup features
         out = _append_columns(out, X[['prop_id']])
+        
         out = out.merge(lookup_book_sum, on='prop_id', how='left')
+        out = out.merge(lookup_position, on='prop_id', how='left')
         out.drop('prop_id', 1, inplace=True)
 
         cols_nan = [
             'prop_location_score2', 'prop_review_score', 
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
             'orig_destination_distance', 'srch_query_affinity_score',
-            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id', 'price_usd_norm_by_prop_id', 'booking_bool_sum']
+            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id',
+            'price_usd_norm_by_prop_id', 'booking_bool_sum',
+            'position_mean','position_std']
         out = _extract_nan(out, columns=cols_nan)
 
         # Check if there are any columns with NaN values not in cols_nan
