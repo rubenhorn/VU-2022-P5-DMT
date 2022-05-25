@@ -1,4 +1,5 @@
 
+from pathlib import Path
 import sys
 from numpy import int8, log10, float32, inf
 import pandas as pd
@@ -60,8 +61,9 @@ class Preprocessing:
 
     def transform(self, X):
         out = pd.DataFrame()
-        lookup_book_sum = pd.read_csv('./output/prop_booking_sum.csv')
-        lookup_position = pd.read_csv('./output/prop_position.csv')
+        out_base_path = (Path(__file__).parent / 'dataset').resolve()
+        lookup_book_sum = pd.read_csv(out_base_path / 'prop_booking_sum.csv')
+        lookup_position = pd.read_csv(out_base_path / 'prop_position.csv')
 
         # Property related features
         out = _append_columns(out, X[['prop_location_score1', 'prop_location_score2']])
