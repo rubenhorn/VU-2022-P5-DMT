@@ -40,4 +40,10 @@ test_set_small = test_set_small.sample(frac=1, random_state=random_state)
 test_set_small.to_csv(
     out_base_path / f'{dataset_name}-test-small.csv', index=False)
 
+tprint(f'Create historical data of property bookings')
+sum_df = train_set.groupby(['prop_id']).agg(
+    {'booking_bool': 'sum'})
+sum_df = df['booking_bool'].rename('booking_bool_sum')
+sum_df.to_csv('./output/prop_booking_sum.csv')
+
 tprint('Done')

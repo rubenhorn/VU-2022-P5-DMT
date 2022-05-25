@@ -60,6 +60,8 @@ class Preprocessing:
 
     def transform(self, X):
         out = pd.DataFrame()
+        lookup_book_sum = pd.read_csv('./output/prop_booking_sum.csv')
+        # lookup_position = load_dataset('./output/prop_position.csv')
 
         # Property related features
         out = _append_columns(out, X[['prop_location_score1', 'prop_location_score2']])
@@ -119,11 +121,16 @@ class Preprocessing:
         # out = out.drop(labels=['price_usd', 'prop_starrating'], axis = 1)
         # print(f'Number of features: {len(out.columns)}'); exit() # DEBUG only
 
+        # Lookup features
+        out = _append_columns(out, X[['prop_id']])
+        out = out.merge(lookup_book_sum, on='prop_id', how='left')
+        out.drop('prop_id', 1, inplace=True)
+
         cols_nan = [
             'prop_location_score2', 'prop_review_score', 
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
             'orig_destination_distance', 'srch_query_affinity_score',
-            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id', 'price_usd_norm_by_prop_id']
+            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id', 'price_usd_norm_by_prop_id', 'booking_bool_sum']
         out = _extract_nan(out, columns=cols_nan)
 
         # Check if there are any columns with NaN values not in cols_nan
