@@ -52,9 +52,17 @@ freq_df.to_csv(out_base_path / 'prop_booking_freq.csv')
 methods = ["mean", "std"]
 
 tprint(f'Create historical data of property position')
+no_rand_position = train_set.loc[train_set['random_bool'] == 0]
+
 position_df = train_set.groupby('prop_id').agg({'position': methods})
 position_df.columns = position_df.columns.droplevel()
 position_df = position_df.rename(columns={'mean': 'position_mean', 'std': 'position_std'})
+
+no_rand_position = no_rand_position.groupby('prop_id').agg({'position': methods})
+no_rand_position.columns = no_rand_position.columns.droplevel()
+no_rand_position = no_rand_position.rename(columns={'mean': 'no_rand_position_mean', 'std': 'no_rand_position_std'})
+
+position_df = pd.merge(position_df, no_rand_position, on='prop_id')
 position_df.to_csv(out_base_path / 'prop_position.csv')
 
 tprint('Done')

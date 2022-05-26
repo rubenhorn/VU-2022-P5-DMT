@@ -68,6 +68,7 @@ class Preprocessing:
         # Property related features
         out = _append_columns(out, X[['prop_location_score1', 'prop_location_score2']])
         out = _append_columns(out, X[['prop_review_score', 'prop_starrating', 'srch_query_affinity_score']])
+        out['srch_query_affinity_score'].fillna(-10, inplace=True)
         out = _append_columns(out, X[['prop_brand_bool', 'promotion_flag', 'random_bool']])
         prices = _limit_values(X[['price_usd', 'prop_log_historical_price']], max_value=5000)
         out = _append_columns(out, prices)
@@ -128,15 +129,19 @@ class Preprocessing:
         
         out = out.merge(lookup_book_sum, on='prop_id', how='left')
         out = out.merge(lookup_position, on='prop_id', how='left')
+        # out['position_mean'].fillna(25, inplace=True)
+        out['no_rand_position_mean'].fillna(25, inplace=True)
+        # out['position_std'].fillna(15, inplace=True)
+        out['no_rand_position_std'].fillna(15, inplace=True)
+        out.drop(['position_mean', 'position_std'], axis=1, inplace=True)
         out.drop('prop_id', 1, inplace=True)
 
         cols_nan = [
             'prop_location_score2', 'prop_review_score', 
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
-            'orig_destination_distance', 'srch_query_affinity_score',
+            'orig_destination_distance',
             'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id',
-            'price_usd_norm_by_prop_id', 'booking_freq', 'booking_sum',
-            'position_mean','position_std']
+            'price_usd_norm_by_prop_id', 'booking_freq', 'booking_sum']
         out = _extract_nan(out, columns=cols_nan)
 
         # Check if there are any columns with NaN values not in cols_nan
