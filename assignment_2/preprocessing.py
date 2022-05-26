@@ -29,7 +29,7 @@ def _limit_values(slice, min_value=None, max_value=None):
         df[df > max_value] = max_value
     return df
 
-def _normalize_features(input_df, group_key, target_column, take_log10=False, export=False):
+def _normalize_features(input_df, group_key, target_column, take_log10=False):
     # for numerical stability
     epsilon = 1e-4
     if take_log10:
@@ -55,6 +55,17 @@ def _normalize_features(input_df, group_key, target_column, take_log10=False, ex
     gc.collect()
     return df_merge[target_column + "_norm_by_" + group_key]
 
+def _get_stat_features(input_df, group_key, target_column):
+    methods = ["mean", "std"]
+    df = input_df.groupby(group_key).agg({target_column: methods})
+    df.columns = df.columns.droplevel()
+    col = {}
+    for method in methods:
+        col[method] = target_column + "_" + method
+    df.rename(columns=col, inplace=True)
+
+    gc.collect()
+    return df
 class Preprocessing:
     def fit(self, X, y=None):
         return self
@@ -136,12 +147,24 @@ class Preprocessing:
         out.drop(['position_mean', 'position_std'], axis=1, inplace=True)
         out.drop('prop_id', 1, inplace=True)
 
+        out = _append_columns(out, X[['srch_id']])
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_starrating'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_review_score'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score1'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score2'), on='srch_id', how='left')
+
+        out.drop('srch_id', 1, inplace=True)
+
         cols_nan = [
             'prop_location_score2', 'prop_review_score', 
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
-            'orig_destination_distance',
-            'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id',
-            'price_usd_norm_by_prop_id', 'booking_freq', 'booking_sum']
+            'orig_destination_distance', 'price_usd_norm_by_srch_id',
+            'prop_starrating_norm_by_srch_id','price_usd_norm_by_prop_id',
+            'booking_freq', 'booking_sum',
+            'prop_starrating_std', 'prop_starrating_mean',
+            'prop_review_score_std', 'prop_review_score_mean',
+            'prop_location_score1_std', 'prop_location_score1_mean',
+            'prop_location_score2_std', 'prop_location_score2_mean']
         out = _extract_nan(out, columns=cols_nan)
 
         # Check if there are any columns with NaN values not in cols_nan
