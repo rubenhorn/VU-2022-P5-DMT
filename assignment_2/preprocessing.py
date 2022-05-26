@@ -62,7 +62,7 @@ class Preprocessing:
     def transform(self, X):
         out = pd.DataFrame()
         out_base_path = (Path(__file__).parent / 'dataset').resolve()
-        lookup_book_sum = pd.read_csv(out_base_path / 'prop_booking_sum.csv')
+        lookup_book_sum = pd.read_csv(out_base_path / 'prop_booking_freq.csv')
         lookup_position = pd.read_csv(out_base_path / 'prop_position.csv')
 
         # Property related features
@@ -135,7 +135,7 @@ class Preprocessing:
             'visitor_hist_adr_usd', 'visitor_hist_starrating',
             'orig_destination_distance', 'srch_query_affinity_score',
             'price_usd_norm_by_srch_id', 'prop_starrating_norm_by_srch_id',
-            'price_usd_norm_by_prop_id', 'booking_bool_sum',
+            'price_usd_norm_by_prop_id', 'booking_freq', 'booking_sum',
             'position_mean','position_std']
         out = _extract_nan(out, columns=cols_nan)
 

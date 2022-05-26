@@ -41,10 +41,13 @@ test_set_small.to_csv(
     out_base_path / f'{dataset_name}-test-small.csv', index=False)
 
 tprint(f'Create historical data of property bookings')
-sum_df = train_set.groupby(['prop_id']).agg(
-    {'booking_bool': 'sum'})
-sum_df = sum_df['booking_bool'].rename('booking_bool_sum')
-sum_df.to_csv(out_base_path / 'prop_booking_sum.csv')
+freq_df = train_set.groupby(['prop_id']).agg(
+    {'booking_bool': ['sum', 'count']})
+freq_df.columns = freq_df.columns.droplevel()
+freq_df['booking_freq'] = freq_df['sum'] / freq_df['count']
+freq_df = freq_df.rename(columns={'sum': 'booking_sum'})
+freq_df.drop(['count'], axis=1, inplace=True)
+freq_df.to_csv(out_base_path / 'prop_booking_freq.csv')
 
 methods = ["mean", "std"]
 
