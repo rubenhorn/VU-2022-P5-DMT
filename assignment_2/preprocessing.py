@@ -139,6 +139,7 @@ class Preprocessing:
         out = _append_columns(out, X[['prop_id']])
         
         out = out.merge(lookup_book_sum, on='prop_id', how='left')
+        out['booking_sum'].fillna(out['booking_sum'].mean(), inplace=True)
         out = out.merge(lookup_position, on='prop_id', how='left')
         # out['position_mean'].fillna(25, inplace=True)
         out['no_rand_position_mean'].fillna(25, inplace=True)
