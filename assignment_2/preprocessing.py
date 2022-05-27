@@ -147,10 +147,10 @@ class Preprocessing:
         out.drop(['position_mean', 'position_std', 'booking_freq'], axis=1, inplace=True)
 
         out = _append_columns(out, X[['srch_id']])
-        # out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_starrating'), on='srch_id', how='left')
-        # out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_review_score'), on='srch_id', how='left')
-        # out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score1'), on='srch_id', how='left')
-        # out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score2'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_starrating'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_review_score'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score1'), on='srch_id', how='left')
+        out = out.merge(_get_stat_features(X, group_key='srch_id', target_column='prop_location_score2'), on='srch_id', how='left')
 
         out = out.merge(_get_stat_features(X, group_key='prop_id', target_column='srch_length_of_stay'), on='prop_id', how='left')
         out = out.merge(_get_stat_features(X, group_key='prop_id', target_column='srch_booking_window'), on='prop_id', how='left')
@@ -167,10 +167,10 @@ class Preprocessing:
             'orig_destination_distance', 'price_usd_norm_by_srch_id',
             'prop_starrating_norm_by_srch_id','price_usd_norm_by_prop_id',
             'booking_sum',
-            # 'prop_starrating_std', 'prop_starrating_mean',
-            # 'prop_review_score_std', 'prop_review_score_mean',
-            # 'prop_location_score1_std', 'prop_location_score1_mean',
-            # 'prop_location_score2_std', 'prop_location_score2_mean',
+            'prop_starrating_std', 'prop_starrating_mean',
+            'prop_review_score_std', 'prop_review_score_mean',
+            'prop_location_score1_std', 'prop_location_score1_mean',
+            'prop_location_score2_std', 'prop_location_score2_mean',
             'srch_length_of_stay_std', 'srch_length_of_stay_mean',
             'srch_booking_window_std', 'srch_booking_window_mean',
             'srch_adults_count_std', 'srch_adults_count_mean',
